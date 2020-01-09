@@ -132,7 +132,10 @@ class somaShade extends Homey.Device
             if ( battery > 310 )
             {
                 await this.setCapabilityValue( 'alarm_battery', ( battery < 370 ) );
-                Homey.app.updateLog( 'Low Battery: ' + battery );
+                if ( battery < 370 )
+                {
+                    Homey.app.updateLog( 'Low Battery: ' + battery, true );
+                }
             }
             else
             {
