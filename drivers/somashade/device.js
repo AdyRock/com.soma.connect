@@ -92,7 +92,6 @@ class somaShade extends Homey.Device
 
     async getDeviceValues()
     {
-        Homey.app.updateLog( this.getName() + ': Getting Values' );
         try
         {
             const devData = this.getData();
@@ -100,6 +99,7 @@ class somaShade extends Homey.Device
 
             // Get the current position Value from the device using the unique mac stored during pairing
             const position = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
+            Homey.app.updateLog( this.getName() + ': Position = ' + position);
             if ( position >= 0 )
             {
                 this.setAvailable();
@@ -120,6 +120,7 @@ class somaShade extends Homey.Device
             const devData = this.getData();
 
             const battery = await Homey.app.getBridge().getBattery( devData[ 'id' ] );
+            Homey.app.updateLog( this.getName() + ': Battery = ' + battery);
             if ( battery > 320 )
             {
                 await this.setCapabilityValue( 'measure_battery', ( battery - 320 ) );
