@@ -32,3 +32,5 @@ CONFIGURATION
 
 NOTES
 Currently only supports one hub
+
+If you have any problems with this app please let me know either via the GitHub link or the community forum.
