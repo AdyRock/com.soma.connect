@@ -101,7 +101,7 @@ class somaShade extends Homey.Device
 
             // Get the current position Value from the device using the unique mac stored during pairing
             const position = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
-            Homey.app.updateLog( this.getName() + ': Position = ' + position);
+            Homey.app.updateLog( this.getName() + ': Position = ' + position );
             if ( position >= 0 )
             {
                 this.setAvailable();
@@ -123,18 +123,18 @@ class somaShade extends Homey.Device
 
             // Get the battery voltage. Comes back as v * 100, e.g. 391 = 3.91v
             const battery = await Homey.app.getBridge().getBattery( devData[ 'id' ] );
-            Homey.app.updateLog( this.getName() + ': Battery = ' + battery);
+            Homey.app.updateLog( this.getName() + ': Battery = ' + battery );
 
             // Calculate battery level as a percentage of full charge that matches the official Soma App
             // The range should be between 3.6 and 4.1 volts for 0 to 100% charge
             var battertPct = ( battery - 360 ) * 2;
 
             // Keep in range of 0 to 100% as the level can be more than 100% when on the charger
-            if (battertPct > 100)
+            if ( battertPct > 100 )
             {
                 battertPct = 100;
             }
-            else if (battertPct < 0)
+            else if ( battertPct < 0 )
             {
                 battertPct = 0;
             }
@@ -142,7 +142,7 @@ class somaShade extends Homey.Device
             await this.setCapabilityValue( 'measure_battery', battertPct );
 
             // Use a bit of hysteresis so we don't get multiple alarms especially as the voltage can drop temporarily when the blind moves
-            if ((battery < 380) && (this.lowBatteryReadings < 4))
+            if ( ( battery < 380 ) && ( this.lowBatteryReadings < 4 ) )
             {
                 this.lowBatteryReadings++;
             }
@@ -151,7 +151,7 @@ class somaShade extends Homey.Device
                 this.lowBatteryReadings = 0;
             }
 
-            await this.setCapabilityValue( 'alarm_battery', (this.lowBatteryReadings >= 4) );
+            await this.setCapabilityValue( 'alarm_battery', ( this.lowBatteryReadings >= 4 ) );
         }
         catch ( err )
         {
