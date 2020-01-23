@@ -52,6 +52,11 @@
             "windowcoverings_closed",
             "windowcoverings_set"
         ],
+        "capabilitiesOptions": {
+          "windowcoverings_closed": {
+            "uiQuickAction": true,
+            "greyout": true
+          },
         "energy":
         {
             "batteries": [
