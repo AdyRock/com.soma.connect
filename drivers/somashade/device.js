@@ -21,6 +21,7 @@ class somaShade extends Homey.Device
         }
 
         this.lowBatteryReadings = 0;
+        this.lowBatteryValue    = 380;
 
         // register a capability listener
         this.registerCapabilityListener( 'windowcoverings_closed', this.onCapabilityClosed.bind( this ) );
@@ -141,17 +142,38 @@ class somaShade extends Homey.Device
 
             await this.setCapabilityValue( 'measure_battery', batteryPct );
 
-            // Use a bit of hysteresis so we don't get multiple alarms especially as the voltage can drop temporarily when the blind moves
-            if ( ( battery < 380 ) && ( this.lowBatteryReadings < 4 ) )
+            // Use a bit of hysteresis so we don't get multiple alarms around the low level
+            // and add a delay as the voltage can drop temporarily when the blind moves
+            if (battery < this.lowBatteryValue)
             {
-                this.lowBatteryReadings++;
+                if (this.lowBatteryReadings < 4)
+                {
+                    this.lowBatteryReadings++;
+                }
+                else
+                {
+                    // There have been at least 4 consecutive low readings so set the battery low alarm
+                    this.setCapabilityValue( 'alarm_battery', true );
+
+                    // Set a high low value (hysteresis)
+                    this.lowBatteryValue = 390;
+                }
             }
             else
             {
-                this.lowBatteryReadings = 0;
-            }
+                if (this.lowBatteryReadings > 0)
+                {
+                    this.lowBatteryReadings--;
+                }
+                else
+                {
+                    // There have been at least 4 consecutive high readings since we last set the alarm so clear it now
+                    this.setCapabilityValue( 'alarm_battery', false );
 
-            await this.setCapabilityValue( 'alarm_battery', ( this.lowBatteryReadings >= 4 ) );
+                    // Set a low low value (hysteresis)
+                    this.lowBatteryValue = 380;
+                }
+            }
         }
         catch ( err )
         {
