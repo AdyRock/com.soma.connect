@@ -1,6 +1,6 @@
 {
     "id": "com.soma.connect",
-    "version": "0.0.8",
+    "version": "1.0.0",
     "compatibility": ">=3.0.0",
     "sdk": 2,
     "name":
