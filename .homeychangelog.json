@@ -16,5 +16,8 @@
   },
   "0.0.7": {
     "en": "Fixed battery levels so they match the Soma App."
+  },
+  "1.0.0": {
+    "en": "Fixed battery % and alarm, Added window covering state for Up / Down / Stop controls."
   }
 }
