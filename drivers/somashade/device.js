@@ -106,7 +106,7 @@ class somaShade extends Homey.Device
             // Get the device information stored during pairing
             const devData = this.getData();
 
-            console.log( "state: ", value, ", opts: ", opts );
+           // console.log( "state: ", value, ", opts: ", opts );
 
             if ( value == "idle" )
             {

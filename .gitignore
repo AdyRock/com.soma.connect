@@ -1,3 +1,4 @@
 env.json
 .jsbeautifyrc
 .vscode
+node_modules

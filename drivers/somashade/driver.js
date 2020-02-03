@@ -26,7 +26,7 @@ class somaShade extends Homey.Driver {
 
         Homey.app.getBridge().getDevices().then( function( devices )
         {
-			console.log( devices );
+			//console.log( devices );
             callback( null, devices );
 
         } ).catch( function( err )
