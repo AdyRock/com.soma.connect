@@ -23,50 +23,29 @@ class somaShade extends Homey.Device
         this.lowBatteryReadings = 0;
         this.lowBatteryValue = 380;
 
-        this.addCapability( 'windowcoverings_state' );
+        if ( this.hasCapability( 'windowcoverings_state' ) )
+        {
+            this.removeCapability( 'windowcoverings_state' );
+        }
+
+        if ( this.hasCapability( 'windowcoverings_closed' ) )
+        {
+            this.removeCapability( 'windowcoverings_closed' );
+        }
+
+        if ( this.hasCapability( 'alarm_battery' ) )
+        {
+            this.removeCapability( 'alarm_battery' );
+        }
 
         // register a capability listener
-        this.registerCapabilityListener( 'windowcoverings_closed', this.onCapabilityClosed.bind( this ) );
         this.registerCapabilityListener( 'windowcoverings_set', this.onCapabilityPosition.bind( this ) );
-        this.registerCapabilityListener( 'windowcoverings_state', this.onCapabilityState.bind( this ) );
     }
 
     initDevice()
     {
         this.getDeviceValues();
         this.getBatteryValues();
-    }
-
-    // this method is called when the Homey device has requested a state change (turned on or off)
-    async onCapabilityClosed( value, opts )
-    {
-        var result = "";
-
-        try
-        {
-            // Get the device information stored during pairing
-            const devData = this.getData();
-            const settings = this.getSettings();
-
-            // The device requires '100' for closed and '50' for open
-            var data = settings.openPosition;
-            if ( value )
-            {
-                data = settings.closedPosition;
-            }
-
-            // Set the switch Value on the device using the unique mac stored during pairing
-            result = await Homey.app.getBridge().setPosition( devData[ 'id' ], data );
-            if ( result != -1 )
-            {
-                this.setAvailable();
-                this.getDeviceValues();
-            }
-        }
-        catch ( err )
-        {
-            Homey.app.updateLog( this.getName() + " onCapabilityOnoff Error " + err );
-        }
     }
 
     // this method is called when the Homey device has requested a position change ( 0 to 1)
@@ -96,66 +75,11 @@ class somaShade extends Homey.Device
         }
     }
 
-    // this method is called when the Homey device has requested a state change (Up, Idle, Down)
-    async onCapabilityState( value, opts )
-    {
-        var result = "";
-
-        try
-        {
-            // Get the device information stored during pairing
-            const devData = this.getData();
-
-           // console.log( "state: ", value, ", opts: ", opts );
-
-            if ( value == "idle" )
-            {
-                Homey.app.getBridge().stopShade( devData[ 'id' ] );
-            }
-            else
-            {
-                const settings = this.getSettings();
-
-                // Get the current position to see if we need to stop part way or go all the way
-                const position = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
-
-                // openPosition is likely to be 100 for roller blinds and 50 for venetian blinds
-                var data = settings.openPosition;
-                if ( value == "up" )
-                {
-                    // Moving up so stop at the open position if the blind is currently below it
-                    if (position >= data)
-                    {
-                        // Already above the open position so go to the top
-                        data = 100;
-                    }
-                }
-                else if ( value == "down" )
-                {
-                    // Moving down so stop at the open position if the blind is currently above it
-                    if (position <= data)
-                    {
-                        // Already below the open position so go to the bottom
-                        data = 0;
-                    }
-                }
-
-                // Set the switch Value on the device using the unique mac stored during pairing
-                Homey.app.getBridge().setPosition( devData[ 'id' ], data );
-            }
-        }
-        catch ( err )
-        {
-            Homey.app.updateLog( this.getName() + " onCapabilityOnoff Error " + err );
-        }
-    }
-
     async getDeviceValues()
     {
         try
         {
             const devData = this.getData();
-            const settings = this.getSettings();
 
             // Get the current position Value from the device using the unique mac stored during pairing
             const position = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
@@ -163,9 +87,7 @@ class somaShade extends Homey.Device
             if ( position >= 0 )
             {
                 this.setAvailable();
-                await this.setCapabilityValue( 'windowcoverings_closed', ( position == settings.closedPosition ) );
                 await this.setCapabilityValue( 'windowcoverings_set', position / 100 );
-                await this.setCapabilityValue( 'windowcoverings_state', "idle" );
             }
         }
         catch ( err )
@@ -199,39 +121,6 @@ class somaShade extends Homey.Device
             }
 
             await this.setCapabilityValue( 'measure_battery', batteryPct );
-
-            // Use a bit of hysteresis so we don't get multiple alarms around the low level
-            // and add a delay as the voltage can drop temporarily when the blind moves
-            if ( battery < this.lowBatteryValue )
-            {
-                if ( this.lowBatteryReadings < 4 )
-                {
-                    this.lowBatteryReadings++;
-                }
-                else
-                {
-                    // There have been at least 4 consecutive low readings so set the battery low alarm
-                    this.setCapabilityValue( 'alarm_battery', true );
-
-                    // Set a high low value (hysteresis)
-                    this.lowBatteryValue = 390;
-                }
-            }
-            else
-            {
-                if ( this.lowBatteryReadings > 0 )
-                {
-                    this.lowBatteryReadings--;
-                }
-                else
-                {
-                    // There have been at least 4 consecutive high readings since we last set the alarm so clear it now
-                    this.setCapabilityValue( 'alarm_battery', false );
-
-                    // Set a low low value (hysteresis)
-                    this.lowBatteryValue = 380;
-                }
-            }
         }
         catch ( err )
         {

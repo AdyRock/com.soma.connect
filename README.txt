@@ -12,7 +12,7 @@ CURRENTLY SUPPORTED:
 * Soma Shades and Tilt 
 
 CAPABILITIES
-* Open / Close / Stop
+* Open / Close / Stop (removed in v1.0.1)
 * Position
 * Battery
 

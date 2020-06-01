@@ -19,5 +19,8 @@
   },
   "1.0.0": {
     "en": "Fixed battery % and alarm, Added window covering state for Up / Down / Stop controls."
+  },
+  "1.0.1": {
+    "en": "Simplified interface to follow Athom guidlines."
   }
 }

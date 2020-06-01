@@ -12,7 +12,7 @@ You will also have to repair all related flows because of that. This only applie
 * Soma Shades and Tilt 
 
 ## Capabilities
-* Open / Close / Stop
+* Open / Close / Stop (removed in v1.0.1)
 * Position
 * Battery
 
