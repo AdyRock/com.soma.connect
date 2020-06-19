@@ -1,7 +1,8 @@
 This app is for Soma devices connected via the Soma Connect hub.
 
 HOW DOES IT WORK
-It connects to the Connect Hub via the Soma API. The hub might require a firmware update.
+It connects to the Connect Hub via the Soma API.
+The hub requires firmware version 2.0.6 or later.
 
 CURRENTLY SUPPORTED:
 * Soma Shades and Tilt 
