@@ -35,6 +35,15 @@ Currently only supports one hub
 
 # Version Log
 
+## 1.0.1
+Simplified interface to follow Athom guidelines, e.g. removed Open / Close / Stop controls.
+
+## 1.0.0
+* Fixed battery % and alarm, Added window covering state for Open / Close / Stop controls.
+
+## 0.0.7
+* Fixed battery levels so they match the Soma App.
+
 ## 0.0.6
 * Added battery alarm trigger
 * Fixed battery polling

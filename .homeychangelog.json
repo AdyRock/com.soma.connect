@@ -6,7 +6,7 @@
     "en": "removed change log from readme, provided sharper images."
   },
   "0.0.4": {
-    "en": "New images realy added"
+    "en": "New images really added"
   },
   "0.0.5": {
     "en": "Fixed Polling."
@@ -18,9 +18,9 @@
     "en": "Fixed battery levels so they match the Soma App."
   },
   "1.0.0": {
-    "en": "Fixed battery % and alarm, Added window covering state for Up / Down / Stop controls."
+    "en": "Fixed battery % and alarm, Added window covering state for Open / Close / Stop controls."
   },
   "1.0.1": {
-    "en": "Simplified interface to follow Athom guidlines."
+    "en": "Simplified interface to follow Athom guidelines, e.g. removed Open / Close / Stop controls."
   }
 }
