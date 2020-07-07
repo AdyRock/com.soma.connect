@@ -8,6 +8,7 @@ class somaShade extends Homey.Device
 
     async onInit()
     {
+        this.onlineState = false;
         try
         {
             Homey.app.updateLog( 'Device initialising( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
@@ -67,6 +68,25 @@ class somaShade extends Homey.Device
             {
                 this.setAvailable();
                 this.getDeviceValues();
+
+                if ( !this.onlineState )
+                {
+                    this.onlineState = true;
+
+                    let driver = this.getDriver();
+                    driver.triggerDeviceOnlineStateChange( this, this.onlineState );
+                }
+            }
+            else
+            {
+                if ( this.onlineState )
+                {
+                    this.onlineState = false;
+
+                    let driver = this.getDriver();
+                    driver.triggerDeviceOnlineStateChange( this, this.onlineState );
+                }
+
             }
         }
         catch ( err )
@@ -88,8 +108,27 @@ class somaShade extends Homey.Device
             {
                 this.setAvailable();
                 await this.setCapabilityValue( 'windowcoverings_set', position / 100 );
+
+                if ( !this.onlineState )
+                {
+                    this.onlineState = true;
+
+                    let driver = this.getDriver();
+                    driver.triggerDeviceOnlineStateChange( this, this.onlineState );
+                }
             }
-        }
+            else
+            {
+                if ( this.onlineState )
+                {
+                    this.onlineState = false;
+
+                    let driver = this.getDriver();
+                    driver.triggerDeviceOnlineStateChange( this, this.onlineState );
+                }
+
+            }
+    }
         catch ( err )
         {
             Homey.app.updateLog( this.getName() + " getDeviceValues Error " + err );
@@ -106,21 +145,24 @@ class somaShade extends Homey.Device
             const battery = await Homey.app.getBridge().getBattery( devData[ 'id' ] );
             Homey.app.updateLog( this.getName() + ': Battery = ' + battery );
 
-            // Calculate battery level as a percentage of full charge that matches the official Soma App
-            // The range should be between 3.6 and 4.1 volts for 0 to 100% charge
-            var batteryPct = ( battery - 360 ) * 2;
-
-            // Keep in range of 0 to 100% as the level can be more than 100% when on the charger
-            if ( batteryPct > 100 )
+            if ( battery >= 0 )
             {
-                batteryPct = 100;
-            }
-            else if ( batteryPct < 0 )
-            {
-                batteryPct = 0;
-            }
+                // Calculate battery level as a percentage of full charge that matches the official Soma App
+                // The range should be between 3.6 and 4.1 volts for 0 to 100% charge
+                var batteryPct = ( battery - 360 ) * 2;
 
-            await this.setCapabilityValue( 'measure_battery', batteryPct );
+                // Keep in range of 0 to 100% as the level can be more than 100% when on the charger
+                if ( batteryPct > 100 )
+                {
+                    batteryPct = 100;
+                }
+                else if ( batteryPct < 0 )
+                {
+                    batteryPct = 0;
+                }
+
+                await this.setCapabilityValue( 'measure_battery', batteryPct );
+            }
         }
         catch ( err )
         {
