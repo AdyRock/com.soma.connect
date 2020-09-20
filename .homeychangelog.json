@@ -22,5 +22,8 @@
   },
   "1.0.1": {
     "en": "Simplified interface to follow Athom guidelines, e.g. removed Open / Close / Stop controls."
+  },
+  "1.1.0": {
+    "en": "Support for Soma Connect V2.2.0 Tilt changes."
   }
 }
