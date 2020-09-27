@@ -49,22 +49,22 @@
                 "en": "Device Online state changed"
             },
             "tokens": [
+            {
+                "name": "state",
+                "type": "boolean",
+                "title":
                 {
-                    "name": "state",
-                    "type": "boolean",
-                    "title":
-                    {
-                        "en": "Online"
-                    },
-                    "example": true
-                } ],
-                "args": [
+                    "en": "Online"
+                },
+                "example": true
+            } ],
+            "args": [
             {
                 "name": "my_device",
                 "type": "device",
                 "filter": "driver_id=somashade"
             } ]
-        }]
+        } ]
     },
     "drivers": [
     {
@@ -98,32 +98,47 @@
             "template": "add_devices"
         } ],
         "settings": [
+        {
+            "id": "deviceType",
+            "type": "dropdown",
+            "label":
             {
-                "id": "deviceType",
-                "type": "dropdown",
-                "label": {
-                  "en": "Device Type"
-                },
-                "value": "shade",
-                "hint": {
-                  "en": "Set to the Soma motor type"
-                },
-                "values": [
-                  {
-                    "id": "shade",
-                    "label": {
-                      "en": "Shade"
-                    }
-                  },
-                  {
-                    "id": "tilt",
-                    "label": {
-                      "en": "Tilt"
-                    }
-                  }
-                ]
-              }
-        ],    
+                "en": "Device Type"
+            },
+            "value": "shade",
+            "hint":
+            {
+                "en": "Set to the Soma motor type"
+            },
+            "values": [
+            {
+                "id": "shade",
+                "label":
+                {
+                    "en": "Shade"
+                }
+            },
+            {
+                "id": "tilt",
+                "label":
+                {
+                    "en": "Tilt"
+                }
+            } ]
+        },
+        {
+            "id": "reverseDirection",
+            "type": "checkbox",
+            "label":
+            {
+                "en": "Reverse Direction"
+            },
+            "value": false,
+            "hint":
+            {
+                "en": "Reverse the Up / Down direction of the controls"
+            }
+        } ],
         "images":
         {
             "large": "/drivers/somashade/assets/images/large.png",

@@ -29,6 +29,11 @@ class somaShade extends Homey.Device
         {
             this.deviceType = 'shade';
         }
+        this.reverseDirection = this.getSetting('reverseDirection');
+        if (!this.reverseDirection)
+        {
+            this.reverseDirection = false;
+        }
 
         if ( this.hasCapability( 'windowcoverings_state' ) )
         {
@@ -60,6 +65,9 @@ class somaShade extends Homey.Device
 		if (changedKeysArr.indexOf("deviceType") >= 0) {
 			this.deviceType = newSettingsObj.deviceType;
 		}
+		if (changedKeysArr.indexOf("reverseDirection") >= 0) {
+			this.reverseDirection = newSettingsObj.reverseDirection;
+		}
     }
 
     // this method is called when the Homey device has requested a position change ( 0 to 1)
@@ -69,6 +77,11 @@ class somaShade extends Homey.Device
 
         try
         {
+            if (this.reverseDirection)
+            {
+                value = 1 - value;
+            }
+
             // Homey return a value of 0 to 1 but the real device requires a value of 0 to 100 prior to version 2.2.0 and -100 to 100 for 2.2.0. and later
             if ( (this.deviceType === 'tilt') && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
             {
@@ -136,7 +149,15 @@ class somaShade extends Homey.Device
                 {
                     position = position / 2 + 50;
                 }
-                await this.setCapabilityValue( 'windowcoverings_set', position / 100 );
+
+                position = position / 100;
+
+                if (this.reverseDirection)
+                {
+                    position = 1 - position;
+                }
+
+                await this.setCapabilityValue( 'windowcoverings_set', position );
 
                 if ( !this.onlineState )
                 {
