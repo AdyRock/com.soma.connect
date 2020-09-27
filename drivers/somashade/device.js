@@ -24,13 +24,13 @@ class somaShade extends Homey.Device
         this.lowBatteryReadings = 0;
         this.lowBatteryValue = 380;
         this.version = "";
-        this.deviceType = this.getSetting('deviceType');
-        if (!this.deviceType)
+        this.deviceType = this.getSetting( 'deviceType' );
+        if ( !this.deviceType )
         {
             this.deviceType = 'shade';
         }
-        this.reverseDirection = this.getSetting('reverseDirection');
-        if (!this.reverseDirection)
+        this.reverseDirection = this.getSetting( 'reverseDirection' );
+        if ( !this.reverseDirection )
         {
             this.reverseDirection = false;
         }
@@ -60,14 +60,22 @@ class somaShade extends Homey.Device
         this.getBatteryValues();
     }
 
-    async onSettings(oldSettingsObj, newSettingsObj, changedKeysArr)
+    async onSettings( oldSettingsObj, newSettingsObj, changedKeysArr )
     {
-		if (changedKeysArr.indexOf("deviceType") >= 0) {
-			this.deviceType = newSettingsObj.deviceType;
-		}
-		if (changedKeysArr.indexOf("reverseDirection") >= 0) {
-			this.reverseDirection = newSettingsObj.reverseDirection;
-		}
+        if ( changedKeysArr.indexOf( "deviceType" ) >= 0 )
+        {
+            this.deviceType = newSettingsObj.deviceType;
+        }
+        if ( changedKeysArr.indexOf( "reverseDirection" ) >= 0 )
+        {
+            this.reverseDirection = newSettingsObj.reverseDirection;
+        }
+    }
+
+    async stop()
+    {
+        const devData = this.getData();
+        return await Homey.app.getBridge().stop( devData[ 'id' ] );
     }
 
     // this method is called when the Homey device has requested a position change ( 0 to 1)
@@ -77,13 +85,13 @@ class somaShade extends Homey.Device
 
         try
         {
-            if (this.reverseDirection)
+            if ( this.reverseDirection )
             {
                 value = 1 - value;
             }
 
             // Homey return a value of 0 to 1 but the real device requires a value of 0 to 100 prior to version 2.2.0 and -100 to 100 for 2.2.0. and later
-            if ( (this.deviceType === 'tilt') && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
+            if ( ( this.deviceType === 'tilt' ) && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
             {
                 value *= 200;
                 value -= 100;
@@ -126,7 +134,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + Homey.app.varToString(err) );
+            Homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + Homey.app.varToString( err ) );
         }
     }
 
@@ -138,21 +146,21 @@ class somaShade extends Homey.Device
 
             // Get the current position Value from the device using the unique mac stored during pairing
             const result = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
-            Homey.app.updateLog( this.getName() + ': Position = ' + Homey.app.varToString(result) );
+            Homey.app.updateLog( this.getName() + ': Position = ' + Homey.app.varToString( result ) );
             if ( ( result != -1 ) && ( result.result === "success" ) )
             {
                 this.setAvailable();
 
                 let position = result.position;
                 this.version = result.version;
-                if ( (this.deviceType === 'tilt') && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
+                if ( ( this.deviceType === 'tilt' ) && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
                 {
                     position = position / 2 + 50;
                 }
 
                 position = position / 100;
 
-                if (this.reverseDirection)
+                if ( this.reverseDirection )
                 {
                     position = 1 - position;
                 }
@@ -181,7 +189,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " getDeviceValues Error " + Homey.app.varToString(err) );
+            Homey.app.updateLog( this.getName() + " getDeviceValues Error " + Homey.app.varToString( err ) );
         }
     }
 
@@ -216,7 +224,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " getBatteryValues Error " + Homey.app.varToString(err) );
+            Homey.app.updateLog( this.getName() + " getBatteryValues Error " + Homey.app.varToString( err ) );
         }
     }
 }

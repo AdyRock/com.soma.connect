@@ -64,7 +64,21 @@
                 "type": "device",
                 "filter": "driver_id=somashade"
             } ]
-        } ]
+        } ],
+        "actions": [
+        {
+            "id": "stop",
+            "title":
+            {
+                "en": "Stop the blind movement"
+            },
+            "args": [
+                {
+                    "name": "my_device",
+                    "type": "device",
+                    "filter": "driver_id=somashade"
+                } ]
+            } ]
     },
     "drivers": [
     {
