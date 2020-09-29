@@ -45,7 +45,7 @@ class somaShade extends Homey.Driver
 
         } ).catch( function( err )
         {
-            callback( new Error( "Connection Failed" + err ), [] );
+            callback( err, [] );
         } );
     }
 
