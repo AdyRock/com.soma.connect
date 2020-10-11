@@ -23,7 +23,14 @@
         ]
     },
     "permissions": [],
-    "bugs":
+    "contributing": {
+        "donate": {
+          "paypal": {
+            "username": "adyrock"
+          }
+        }
+      },
+        "bugs":
     {
         "url": "https://github.com/AdyRock/com.soma.connect/issues"
     },
