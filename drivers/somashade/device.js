@@ -134,7 +134,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + Homey.app.varToString( err ) );
+            Homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + Homey.app.varToString( err ), true );
         }
     }
 
@@ -189,7 +189,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " getDeviceValues Error " + Homey.app.varToString( err ) );
+            Homey.app.updateLog( this.getName() + " getDeviceValues Error " + Homey.app.varToString( err ), true );
         }
     }
 
@@ -224,7 +224,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " getBatteryValues Error " + Homey.app.varToString( err ) );
+            Homey.app.updateLog( this.getName() + " getBatteryValues Error " + Homey.app.varToString( err ), true );
         }
     }
 }

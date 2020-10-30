@@ -25,5 +25,8 @@
   },
   "1.1.0": {
     "en": "Support for Soma Connect V2.2.0 Tilt changes. Added settings for device type (shades / tilt) and direction reversal"
+  },
+  "1.1.1": {
+    "en": "Keep size of log less than 10k"
   }
 }
