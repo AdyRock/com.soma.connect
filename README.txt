@@ -5,7 +5,7 @@ It connects to the Connect Hub via the Soma API.
 The Connect hub requires Soma firmware version 2.0.6 or later.
 
 CURRENTLY SUPPORTED:
-* Soma Shades and Tilt 
+* Soma Shades, Shades 2 and Tilt 
 
 CAPABILITIES
 * Open / Close / Stop (removed in v1.0.1)
