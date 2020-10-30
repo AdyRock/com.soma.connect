@@ -23,10 +23,7 @@
   "1.0.1": {
     "en": "Simplified interface to follow Athom guidelines, e.g. removed Open / Close / Stop controls."
   },
-  "1.1.0": {
-    "en": "Support for Soma Connect V2.2.0 Tilt changes. Added settings for device type (shades / tilt) and direction reversal"
-  },
   "1.1.1": {
-    "en": "Keep size of log less than 10k"
+    "en": "Support for Soma Connect V2.2.0 Tilt changes. Added settings for device type (shades / tilt) and direction reversal"
   }
 }
