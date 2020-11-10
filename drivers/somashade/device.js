@@ -11,14 +11,20 @@ class somaShade extends Homey.Device
         this.onlineState = false;
         try
         {
-            Homey.app.updateLog( 'Device initialising( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
+            if ( Homey.app.logEnabled )
+            {
+                Homey.app.updateLog( 'Device initialising( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
+            }
 
             this.initDevice();
-            Homey.app.updateLog( 'Device initialised( Name: ' + this.getName() + ")" );
+            if ( Homey.app.logEnabled )
+            {
+                Homey.app.updateLog( 'Device initialised( Name: ' + this.getName() + ")" );
+            }
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " OnInit Error: " + err );
+            Homey.app.updateLog( this.getName() + " OnInit Error: " + err, true );
         }
 
         this.lowBatteryReadings = 0;
@@ -105,7 +111,11 @@ class somaShade extends Homey.Device
             const devData = this.getData();
 
             // Set the dim Value on the device using the unique feature ID stored during pairing
-            Homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
+            if ( Homey.app.logEnabled )
+            {
+                Homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
+            }
+            
             result = await Homey.app.getBridge().setPosition( devData[ 'id' ], value );
             if ( result != -1 )
             {
@@ -146,7 +156,11 @@ class somaShade extends Homey.Device
 
             // Get the current position Value from the device using the unique mac stored during pairing
             const result = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
-            Homey.app.updateLog( this.getName() + ': Position = ' + Homey.app.varToString( result ) );
+            if ( Homey.app.logEnabled )
+            {
+                Homey.app.updateLog( this.getName() + ': Position = ' + Homey.app.varToString( result ) );
+            }
+
             if ( ( result != -1 ) && ( result.result === "success" ) )
             {
                 this.setAvailable();
@@ -201,7 +215,10 @@ class somaShade extends Homey.Device
 
             // Get the battery voltage. Comes back as v * 100, e.g. 391 = 3.91v
             const battery = await Homey.app.getBridge().getBattery( devData[ 'id' ] );
-            Homey.app.updateLog( this.getName() + ': Battery = ' + battery );
+            if ( Homey.app.logEnabled )
+            {
+                Homey.app.updateLog( this.getName() + ': Battery = ' + battery );
+            }
 
             if ( battery >= 0 )
             {

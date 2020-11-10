@@ -52,7 +52,11 @@ class somaShade extends Homey.Driver
     async triggerDeviceOnlineStateChange( Device, Value )
     {
         // trigger the card
-        this.log( "Triggering device Online State with: ", Value );
+        if ( Homey.app.logEnabled )
+        {
+            Homey.app.updateLog( "Triggering device Online State with: " + Value );
+        }
+        
         let tokens = { 'state': Value };
         let state = {};
 
