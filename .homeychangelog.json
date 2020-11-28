@@ -28,5 +28,8 @@
   },
   "1.1.2": {
     "en": "Reduced memory usage."
+  },
+  "1.1.3": {
+    "en": "Rewrite of Polling system. Battery state only refreshes once per hour to reduce load"
   }
 }
