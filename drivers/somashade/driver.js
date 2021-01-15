@@ -75,9 +75,9 @@ class somaShade extends Homey.Driver
             {
                 const refreshTime = Number( NewTime ) * 1000;
                 this.valueTimerID = setTimeout( this.onPollValues, refreshTime );
-                if ( this.logEnabled )
+                if ( Homey.app.logEnabled )
                 {
-                    this.updateLog( "Refresh in " + NewTime + "s" );
+                    Homey.app.updateLog( "Refresh in " + NewTime + "s" );
                 }
             }
 
@@ -93,9 +93,9 @@ class somaShade extends Homey.Driver
             const promises = [];
             try
             {
-                if ( this.logEnabled )
+                if ( Homey.app.logEnabled )
                 {
-                    this.updateLog( "\n*** Refreshing Values ***" );
+                    Homey.app.updateLog( "\n*** Refreshing Values ***" );
                 }
 
                 let devices = this.getDevices();
@@ -111,7 +111,7 @@ class somaShade extends Homey.Driver
             }
             catch ( err )
             {
-                this.updateLog( "Values Polling Error: " + err, true );
+                Homey.app.updateLog( "Values Polling Error: " + err, true );
             }
                 
             await Promise.all( promises );
@@ -134,9 +134,9 @@ class somaShade extends Homey.Driver
             const promises = [];
             try
             {
-                if ( this.logEnabled )
+                if ( Homey.app.logEnabled )
                 {
-                    this.updateLog( "\n*** Refreshing Battery Values ***" );
+                    Homey.app.updateLog( "\n*** Refreshing Battery Values ***" );
                 }
 
                 let devices = this.getDevices();
@@ -152,7 +152,7 @@ class somaShade extends Homey.Driver
             }
             catch ( err )
             {
-                this.updateLog( "Battery Polling Error: " + err, true );
+                Homey.app.updateLog( "Battery Polling Error: " + err, true );
             }
                 
             await Promise.all( promises );
@@ -164,9 +164,9 @@ class somaShade extends Homey.Driver
 
             clearTimeout( this.batteryTimerID );
             this.batteryTimerID = setTimeout( this.onPollBattery, 60 * 60 * 1000 );
-            if ( this.logEnabled )
+            if ( Homey.app.logEnabled )
             {
-                this.updateLog( "Battery Status Refresh in 1hr" );
+                Homey.app.updateLog( "Battery Status Refresh in 1hr" );
             }
 
             this.batteryTimerProcessing = false;
