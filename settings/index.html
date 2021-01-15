@@ -111,7 +111,7 @@
 
             saveElement.addEventListener( 'click', function( e )
             {
-                hubIPElement.value = hubIPElement.value.replace( /[\"\']/g, '' );
+                hubIPElement.value = hubIPElement.value.replace( /[\"\' ]/g, '' );
                 Homey.set( 'hubIP', hubIPElement.value, function( err )
                 {
                     if ( err ) return Homey.alert( err );
