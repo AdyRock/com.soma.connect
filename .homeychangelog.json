@@ -34,5 +34,8 @@
   },
   "1.1.4": {
     "en": "Fixed a bug in the logging that allowed a lot of memory to be used."
+  },
+  "1.1.5": {
+    "en": "Trim spaces from IP address input."
   }
 }
