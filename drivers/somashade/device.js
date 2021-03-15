@@ -1,3 +1,4 @@
+/*jslint node: true */
 'use strict';
 
 const Homey = require( 'homey' );
@@ -8,6 +9,11 @@ class somaShade extends Homey.Device
 
     async onInit()
     {
+        if ( this.homey.app.logEnabled )
+        {
+            this.homey.app.updateLog( 'Device initialising( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
+        }
+
         this.valueInitialised = false;
         this.batteryInitialised = false;
         this.onlineState = true;
@@ -27,44 +33,39 @@ class somaShade extends Homey.Device
 
         try
         {
-            if ( Homey.app.logEnabled )
-            {
-                Homey.app.updateLog( 'Device initialising( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
-            }
-
             this.initDeviceValues( ok =>
             {
-                if ( Homey.app.logEnabled )
+                if ( this.homey.app.logEnabled )
                 {
                     if ( ok )
                     {
-                        Homey.app.updateLog( 'Device values initialised( Name: ' + this.getName() + ")" );
+                        this.homey.app.updateLog( 'Device values initialised( Name: ' + this.getName() + ")" );
                     }
                     else
                     {
-                        Homey.app.updateLog( 'Device values FAILED to initialised( Name: ' + this.getName() + ")" );
+                        this.homey.app.updateLog( 'Device values FAILED to initialised( Name: ' + this.getName() + ")" );
                     }
                 }
             } );
 
             this.initDeviceBattery( ok =>
             {
-                if ( Homey.app.logEnabled )
+                if ( this.homey.app.logEnabled )
                 {
                     if ( ok )
                     {
-                        Homey.app.updateLog( 'Device battery initialised( Name: ' + this.getName() + ")" );
+                        this.homey.app.updateLog( 'Device battery initialised( Name: ' + this.getName() + ")" );
                     }
                     else
                     {
-                        Homey.app.updateLog( 'Device battery FAILED to initialised( Name: ' + this.getName() + ")" );
+                        this.homey.app.updateLog( 'Device battery FAILED to initialised( Name: ' + this.getName() + ")" );
                     }
                 }
             } );
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " OnInit Error: " + err, true );
+            this.homey.app.updateLog( this.getName() + " OnInit Error: " + err, true );
         }
 
         if ( this.hasCapability( 'windowcoverings_state' ) )
@@ -86,6 +87,11 @@ class somaShade extends Homey.Device
         this.registerCapabilityListener( 'windowcoverings_set', this.onCapabilityPosition.bind( this ) );
 
         this.initialised = true;
+
+        if ( this.homey.app.logEnabled )
+        {
+            this.homey.app.updateLog( 'Device initialise complete( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
+        }
     }
 
     async initDeviceValues()
@@ -102,15 +108,15 @@ class somaShade extends Homey.Device
         return ok;
     }
 
-    async onSettings( oldSettingsObj, newSettingsObj, changedKeysArr )
+    async onSettings( { oldSettings, newSettings, changedKeys } )
     {
-        if ( changedKeysArr.indexOf( "deviceType" ) >= 0 )
+        if ( changedKeys.indexOf( "deviceType" ) >= 0 )
         {
-            this.deviceType = newSettingsObj.deviceType;
+            this.deviceType = newSettings.deviceType;
         }
-        if ( changedKeysArr.indexOf( "reverseDirection" ) >= 0 )
+        if ( changedKeys.indexOf( "reverseDirection" ) >= 0 )
         {
-            this.reverseDirection = newSettingsObj.reverseDirection;
+            this.reverseDirection = newSettings.reverseDirection;
         }
 
         this.getDeviceValues();
@@ -121,18 +127,17 @@ class somaShade extends Homey.Device
         if ( this.onlineState )
         {
             this.onlineState = false;
-            this.setUnavailable();
+            this.setUnavailable( err );
 
-            let driver = this.getDriver();
-            driver.triggerDeviceOnlineStateChange( this, this.onlineState );
+            this.driver.triggerDeviceOnlineStateChange( this, this.onlineState );
         }
-        Homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + Homey.app.varToString( err ), true );
+        this.homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + this.homey.app.varToString( err ), true );
     }
 
     async stop()
     {
         const devData = this.getData();
-        return await Homey.app.getBridge().stop( devData[ 'id' ] );
+        return await this.homey.app.getBridge().stop( devData.id );
     }
 
     // this method is called when the Homey device has requested a position change ( 0 to 1)
@@ -140,7 +145,7 @@ class somaShade extends Homey.Device
     {
         var result = "";
 
-//        try
+        //        try
         {
             if ( this.reverseDirection )
             {
@@ -148,7 +153,7 @@ class somaShade extends Homey.Device
             }
 
             // Homey return a value of 0 to 1 but the real device requires a value of 0 to 100 prior to version 2.2.0 and -100 to 100 for 2.2.0. and later
-            if ( ( this.deviceType === 'tilt' ) && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
+            if ( ( this.deviceType === 'tilt' ) && this.homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
             {
                 value *= 200;
                 value -= 100;
@@ -162,12 +167,12 @@ class somaShade extends Homey.Device
             const devData = this.getData();
 
             // Set the dim Value on the device using the unique feature ID stored during pairing
-            if ( Homey.app.logEnabled )
+            if ( this.homey.app.logEnabled )
             {
-                Homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
+                this.homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
             }
 
-            result = await Homey.app.getBridge().setPosition( devData[ 'id' ], value );
+            result = await this.homey.app.getBridge().setPosition( devData.id, value );
             if ( result.result != 'error' )
             {
                 this.setAvailable();
@@ -177,8 +182,7 @@ class somaShade extends Homey.Device
                 {
                     this.onlineState = true;
 
-                    let driver = this.getDriver();
-                    driver.triggerDeviceOnlineStateChange( this, this.onlineState );
+                    this.driver.triggerDeviceOnlineStateChange( this, this.onlineState );
                 }
             }
             else
@@ -199,10 +203,10 @@ class somaShade extends Homey.Device
             const devData = this.getData();
 
             // Get the current position Value from the device using the unique mac stored during pairing
-            const result = await Homey.app.getBridge().getPosition( devData[ 'id' ] );
-            if ( Homey.app.logEnabled )
+            const result = await this.homey.app.getBridge().getPosition( devData.id );
+            if ( this.homey.app.logEnabled )
             {
-                Homey.app.updateLog( this.getName() + ': Position = ' + Homey.app.varToString( result ) );
+                this.homey.app.updateLog( this.getName() + ': Position = ' + this.homey.app.varToString( result ) );
             }
 
             if ( ( result != -1 ) && ( result.result === "success" ) )
@@ -211,7 +215,7 @@ class somaShade extends Homey.Device
 
                 let position = result.position;
                 this.version = result.version;
-                if ( ( this.deviceType === 'tilt' ) && Homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
+                if ( ( this.deviceType === 'tilt' ) && this.homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
                 {
                     position = position / 2 + 50;
                 }
@@ -254,10 +258,10 @@ class somaShade extends Homey.Device
             const devData = this.getData();
 
             // Get the battery voltage. Comes back as v * 100, e.g. 391 = 3.91v
-            const battery = await Homey.app.getBridge().getBattery( devData[ 'id' ] );
-            if ( Homey.app.logEnabled )
+            const battery = await this.homey.app.getBridge().getBattery( devData.id );
+            if ( this.homey.app.logEnabled )
             {
-                Homey.app.updateLog( this.getName() + ': Battery = ' + battery );
+                this.homey.app.updateLog( this.getName() + ': Battery = ' + battery );
             }
 
             if ( battery === undefined )
@@ -289,7 +293,7 @@ class somaShade extends Homey.Device
         }
         catch ( err )
         {
-            Homey.app.updateLog( this.getName() + " getBatteryValues Error " + Homey.app.varToString( err ), true );
+            this.homey.app.updateLog( this.getName() + " getBatteryValues Error " + this.homey.app.varToString( err ), true );
         }
 
         return false;

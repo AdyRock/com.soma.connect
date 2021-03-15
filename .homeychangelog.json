@@ -37,5 +37,8 @@
   },
   "1.1.5": {
     "en": "Trim spaces from IP address input."
+  },
+  "1.2.0": {
+    "en": "Converted to SDK 3."
   }
 }

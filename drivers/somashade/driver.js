@@ -1,3 +1,4 @@
+/*jslint node: true */
 'use strict';
 
 const Homey = require( 'homey' );
@@ -9,52 +10,28 @@ class somaShade extends Homey.Driver
     {
         this.log( 'somaShade has been init' );
 
-        this.valuesTimerProcessing = false;
-        this.batteryTimerProcessing = false;
-        this.settingPollTime = false;
+        this.deviceOnlineStateTrigger = this.homey.flow.getDeviceTriggerCard( 'deviceOnlineState' );
 
-        this.valueTimerID = null;
-        this.batteryTimerID = null;
-
-        this.onPollValues = this.onPollValues.bind( this );
-        this.onPollBattery = this.onPollBattery.bind( this );
-
-
-        this.deviceOnlineStateTrigger = new Homey.FlowCardTriggerDevice( 'deviceOnlineState' );
-        this.deviceOnlineStateTrigger
-            .register()
-
-        let stopAction = new Homey.FlowCardAction( 'stop' );
+        const stopAction = this.homey.flow.getActionCard( 'stop' );
         stopAction
-            .register()
             .registerRunListener( async ( args, state ) =>
             {
                 return args.my_device.stop(); // Promise<void>
-            } )
-
-        this.setPollTime( Homey.ManagerSettings.get( 'pollInterval' ) );
+            } );
     }
 
     // this is the easiest method to overwrite, when only the template 'Drivers-Pairing-System-Views' is being used.
-    onPairListDevices( data, callback )
+    async onPairListDevices()
     {
-        Homey.app.getBridge().getDevices().then( function( devices )
-        {
-            //console.log( devices );
-            callback( null, devices );
-
-        } ).catch( function( err )
-        {
-            callback( err, [] );
-        } );
+        return this.homey.app.getDevices();
     }
 
     async triggerDeviceOnlineStateChange( Device, Value )
     {
         // trigger the card
-        if ( Homey.app.logEnabled )
+        if ( this.homey.app.logEnabled )
         {
-            Homey.app.updateLog( "Triggering device Online State with: " + Value );
+            this.homey.app.updateLog( "Triggering device Online State with: " + Value );
         }
 
         let tokens = { 'state': Value };
@@ -62,114 +39,57 @@ class somaShade extends Homey.Driver
 
         this.deviceOnlineStateTrigger.trigger( Device, tokens, state )
             .then( this.log )
-            .catch( this.error )
-    }
-
-    setPollTime( NewTime, IgnorePollFlag )
-    {
-        if (!this.settingPollTime)
-        {
-            this.settingPollTime = true;
-            clearTimeout( this.valueTimerID );
-            if ( ( IgnorePollFlag || Homey.ManagerSettings.get( 'usePolling' ) ) && !this.valuesTimerProcessing )
-            {
-                const refreshTime = Number( NewTime ) * 1000;
-                this.valueTimerID = setTimeout( this.onPollValues, refreshTime );
-                if ( Homey.app.logEnabled )
-                {
-                    Homey.app.updateLog( "Refresh in " + NewTime + "s" );
-                }
-            }
-
-            this.settingPollTime = false;
-        }
+            .catch( this.error );
     }
 
     async onPollValues()
     {
-        if (!this.valuesTimerProcessing)
+        try
         {
-            this.valuesTimerProcessing = true;
-            const promises = [];
-            try
+            let devices = this.getDevices();
+            for ( var i = 0; i < devices.length; i++ )
             {
-                if ( Homey.app.logEnabled )
+                let device = devices[ i ];
+                if ( device.valueInitialised )
                 {
-                    Homey.app.updateLog( "\n*** Refreshing Values ***" );
-                }
-
-                let devices = this.getDevices();
-                
-                for ( var i = 0; i < devices.length; i++ )
-                {
-                    let device = devices[ i ];
-                    if (device.valueInitialised)
-                    {
-                        promises.push( device.getDeviceValues() );
-                    }
+                    await device.getDeviceValues();
                 }
             }
-            catch ( err )
-            {
-                Homey.app.updateLog( "Values Polling Error: " + err, true );
-            }
-                
-            await Promise.all( promises );
-                
-            if ( Homey.app.logEnabled )
-            {
-                Homey.app.updateLog( "*** Refreshing Values Finished ***\n" );
-            }
-
-            this.valuesTimerProcessing = false;
-            this.setPollTime( Homey.ManagerSettings.get( 'pollInterval' ) );
+        }
+        catch ( err )
+        {
+            this.homey.app.updateLog( "Values Polling Error: " + err, true );
         }
     }
 
     async onPollBattery()
     {
-        if (!this.batteryTimerProcessing)
+        try
         {
-            this.batteryTimerProcessing = true;
-            const promises = [];
-            try
+            if ( this.homey.app.logEnabled )
             {
-                if ( Homey.app.logEnabled )
-                {
-                    Homey.app.updateLog( "\n*** Refreshing Battery Values ***" );
-                }
+                this.homey.app.updateLog( "\n*** Refreshing Battery Values ***" );
+            }
 
-                let devices = this.getDevices();
-                
-                for ( var i = 0; i < devices.length; i++ )
+            let devices = this.getDevices();
+
+            for ( var i = 0; i < devices.length; i++ )
+            {
+                let device = devices[ i ];
+                if ( device.batteryInitialised )
                 {
-                    let device = devices[ i ];
-                    if (device.batteryInitialised)
-                    {
-                        promises.push( device.getBatteryValues() );
-                    }
+                    await device.getBatteryValues();
                 }
             }
-            catch ( err )
-            {
-                Homey.app.updateLog( "Battery Polling Error: " + err, true );
-            }
-                
-            await Promise.all( promises );
-                
-            if ( Homey.app.logEnabled )
-            {
-                Homey.app.updateLog( "*** Refreshing Battery Finished ***\n" );
-            }
+        }
+        catch ( err )
+        {
+            this.homey.app.updateLog( "Battery Polling Error: " + err, true );
+        }
 
-            clearTimeout( this.batteryTimerID );
-            this.batteryTimerID = setTimeout( this.onPollBattery, 60 * 60 * 1000 );
-            if ( Homey.app.logEnabled )
-            {
-                Homey.app.updateLog( "Battery Status Refresh in 1hr" );
-            }
-
-            this.batteryTimerProcessing = false;
+        if ( this.homey.app.logEnabled )
+        {
+            this.homey.app.updateLog( "*** Refreshing Battery Finished ***\n" );
         }
     }
 }
