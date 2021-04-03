@@ -40,5 +40,8 @@
   },
   "1.2.0": {
     "en": "Converted to SDK 3."
+  },
+  "1.2.1": {
+    "en": "Fix issue with pairing."
   }
 }

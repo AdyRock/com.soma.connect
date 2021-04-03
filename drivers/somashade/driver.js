@@ -23,7 +23,7 @@ class somaShade extends Homey.Driver
     // this is the easiest method to overwrite, when only the template 'Drivers-Pairing-System-Views' is being used.
     async onPairListDevices()
     {
-        return this.homey.app.getDevices();
+        return this.homey.app.getBridge().getDevices();
     }
 
     async triggerDeviceOnlineStateChange( Device, Value )
