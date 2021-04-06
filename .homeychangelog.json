@@ -43,5 +43,8 @@
   },
   "1.2.1": {
     "en": "Fix issue with pairing."
+  },
+  "1.2.2": {
+    "en": "Converted to SDK 3. Fix issue with pairing. Add timeout to http requests"
   }
 }
