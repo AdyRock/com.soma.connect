@@ -14,8 +14,6 @@ class somaShade extends Homey.Device
             this.homey.app.updateLog( 'Device initialising( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );
         }
 
-        this.valueInitialised = false;
-        this.batteryInitialised = false;
         this.onlineState = true;
         this.lowBatteryReadings = 0;
         this.lowBatteryValue = 380;
@@ -24,48 +22,20 @@ class somaShade extends Homey.Device
         if ( !this.deviceType )
         {
             this.deviceType = 'shade';
+            this.setSettings( {'deviceType': this.deviceType} );
         }
         this.reverseDirection = this.getSetting( 'reverseDirection' );
         if ( !this.reverseDirection )
         {
             this.reverseDirection = false;
+            this.setSettings( {'reverseDirection': this.reverseDirection} );
         }
 
-        try
+        this.morning_mode = this.getSetting( 'morning_mode' );
+        if ( !this.morning_mode )
         {
-            this.initDeviceValues( ok =>
-            {
-                if ( this.homey.app.logEnabled )
-                {
-                    if ( ok )
-                    {
-                        this.homey.app.updateLog( 'Device values initialised( Name: ' + this.getName() + ")" );
-                    }
-                    else
-                    {
-                        this.homey.app.updateLog( 'Device values FAILED to initialised( Name: ' + this.getName() + ")" );
-                    }
-                }
-            } );
-
-            this.initDeviceBattery( ok =>
-            {
-                if ( this.homey.app.logEnabled )
-                {
-                    if ( ok )
-                    {
-                        this.homey.app.updateLog( 'Device battery initialised( Name: ' + this.getName() + ")" );
-                    }
-                    else
-                    {
-                        this.homey.app.updateLog( 'Device battery FAILED to initialised( Name: ' + this.getName() + ")" );
-                    }
-                }
-            } );
-        }
-        catch ( err )
-        {
-            this.homey.app.updateLog( this.getName() + " OnInit Error: " + err, true );
+            this.morning_mode = false;
+            this.setSettings( {'morning_mode': this.morning_mode} );
         }
 
         if ( this.hasCapability( 'windowcoverings_state' ) )
@@ -94,17 +64,25 @@ class somaShade extends Homey.Device
         }
     }
 
+    async onAdded()
+    {
+        const type = this.getStoreValue('type');
+        if (type)
+        {
+            this.deviceTyp = type;
+            this.setSettings( {'deviceType': type} );
+        }
+    }
+
     async initDeviceValues()
     {
         const ok = await this.getDeviceValues();
-        this.valueInitialised = true;
         return ok;
     }
 
     async initDeviceBattery()
     {
         const ok = await this.getBatteryValues();
-        this.batteryInitialised = true;
         return ok;
     }
 
@@ -117,6 +95,10 @@ class somaShade extends Homey.Device
         if ( changedKeys.indexOf( "reverseDirection" ) >= 0 )
         {
             this.reverseDirection = newSettings.reverseDirection;
+        }
+        if ( changedKeys.indexOf( "morning_mode" ) >= 0 )
+        {
+            this.morning_mode = newSettings.morning_mode;
         }
 
         this.getDeviceValues();
@@ -152,11 +134,27 @@ class somaShade extends Homey.Device
                 value = 1 - value;
             }
 
+            let upwards = "";
+
             // Homey return a value of 0 to 1 but the real device requires a value of 0 to 100 prior to version 2.2.0 and -100 to 100 for 2.2.0. and later
             if ( ( this.deviceType === 'tilt' ) && this.homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
             {
                 value *= 200;
                 value -= 100;
+
+                if (this.homey.app.compareVersions( this.version, "2.2.5" ) >= 0 )
+                {
+                    if (value < 0)
+                    {
+                        value *= -1;
+                        upwards = "?close_upwards=1";
+                    }
+
+                    if (this.morning_mode || opts.slow)
+                    {
+                        upwards += "?morning_mode=1";
+                    }
+                }
             }
             else
             {
@@ -172,7 +170,7 @@ class somaShade extends Homey.Device
                 this.homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
             }
 
-            result = await this.homey.app.getBridge().setPosition( devData.id, value );
+            result = await this.homey.app.getBridge().setPosition( devData.id, value, upwards );
             if ( result.result != 'error' )
             {
                 this.setAvailable();
@@ -217,7 +215,22 @@ class somaShade extends Homey.Device
                 this.version = result.version;
                 if ( ( this.deviceType === 'tilt' ) && this.homey.app.compareVersions( this.version, "2.2.0" ) >= 0 )
                 {
-                    position = position / 2 + 50;
+                    if (this.homey.app.compareVersions( this.version, "2.2.5" ) >= 0 )
+                    {
+                        position = position / 2;
+                        if (!result.closed_upwards)
+                        {
+                            position = 50 + position;
+                        }
+                        else
+                        {
+                            position = 50 - position;
+                        }
+                    }
+                    else
+                    {
+                        position = position / 2 + 50;
+                    }
                 }
 
                 position = position / 100;

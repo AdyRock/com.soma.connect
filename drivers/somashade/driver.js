@@ -18,6 +18,12 @@ class somaShade extends Homey.Driver
             {
                 return args.my_device.stop(); // Promise<void>
             } );
+        const QuietMoveAction = this.homey.flow.getActionCard( 'windowcoverings_set_speed' );
+        QuietMoveAction
+            .registerRunListener( async ( args, state ) =>
+            {
+                return args.my_device.onCapabilityPosition( args.windowcoverings_set, {'slow': true} ); // Promise<void>
+            } );
     }
 
     // this is the easiest method to overwrite, when only the template 'Drivers-Pairing-System-Views' is being used.
@@ -50,7 +56,7 @@ class somaShade extends Homey.Driver
             for ( var i = 0; i < devices.length; i++ )
             {
                 let device = devices[ i ];
-                if ( device.valueInitialised )
+                if ( device.initialised )
                 {
                     await device.getDeviceValues();
                 }
@@ -76,7 +82,7 @@ class somaShade extends Homey.Driver
             for ( var i = 0; i < devices.length; i++ )
             {
                 let device = devices[ i ];
-                if ( device.batteryInitialised )
+                if ( device.initialised )
                 {
                     await device.getBatteryValues();
                 }

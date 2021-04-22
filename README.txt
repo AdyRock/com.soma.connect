@@ -1,25 +1,7 @@
-This app is for Soma devices connected via the Soma Connect hub.
+Bring your Soma Shade and Tilt devices, connected via the Soma Connect hub, into Homey.
 
-HOW DOES IT WORK
-It connects to the Connect Hub via the Soma API.
-The Connect hub requires Soma firmware version 2.0.6 or later.
+Open the blinds when your alarm goes off to Wake up to sunshine.
+Close the blinds in the evening so it looks like you are at home all the time.
+Room getting too hot then close the blinds to keep the sun out.
+Homey can do it all when you integrate all your devices.
 
-CURRENTLY SUPPORTED:
-* Soma Shades, Shades 2 and Tilt 
-
-CAPABILITIES
-* Open / Close / Stop (removed in v1.0.1)
-* Position
-* Battery
-
-FLOWS:
-Triggers:
-* Position Changed
-
-Conditions:
-* Position
-
-Then:
-* Set Position to
-
-If you have any problems with this app please let me know either via the GitHub link or the community forum link so I can fix it.

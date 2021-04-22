@@ -4,19 +4,16 @@
     "compatibility": ">=5.0.0",
     "sdk": 3,
     "brandColor": "#FF7D4B",
-    "name":
-    {
+    "name": {
         "en": "Soma Connect"
     },
-    "description":
-    {
+    "description": {
         "en": "Control your Soma blinds and shades"
     },
     "category": [
         "appliances"
     ],
-    "tags":
-    {
+    "tags": {
         "en": [
             "Soma",
             "Blinds"
@@ -25,148 +22,173 @@
     "permissions": [],
     "contributing": {
         "donate": {
-          "paypal": {
-            "username": "adyrock"
-          }
+            "paypal": {
+                "username": "adyrock"
+            }
         }
-      },
-        "bugs":
-    {
+    },
+    "bugs": {
         "url": "https://github.com/AdyRock/com.soma.connect/issues"
     },
     "source": "https://github.com/AdyRock/com.soma.connect",
     "homeyCommunityTopicId": 22000,
-    "images":
-    {
+    "images": {
         "large": "/assets/images/large.png",
         "small": "/assets/images/small.png"
     },
-    "author":
-    {
+    "author": {
         "name": "Adrian Rockall",
         "email": "ady@rockall.plus.com"
     },
-    "api":
-    {
-    },
-    "flow":
-    {
+    "api": {},
+    "flow": {
         "triggers": [
-        {
-            "id": "deviceOnlineState",
-            "title":
             {
-                "en": "Device Online state changed"
-            },
-            "tokens": [
-            {
-                "name": "state",
-                "type": "boolean",
-                "title":
-                {
-                    "en": "Online"
+                "id": "deviceOnlineState",
+                "title": {
+                    "en": "Device Online state changed"
                 },
-                "example": true
-            } ],
-            "args": [
-            {
-                "name": "my_device",
-                "type": "device",
-                "filter": "driver_id=somashade"
-            } ]
-        } ],
+                "tokens": [
+                    {
+                        "name": "state",
+                        "type": "boolean",
+                        "title": {
+                            "en": "Online"
+                        },
+                        "example": true
+                    }
+                ],
+                "args": [
+                    {
+                        "name": "my_device",
+                        "type": "device",
+                        "filter": "driver_id=somashade"
+                    }
+                ]
+            }
+        ],
         "actions": [
-        {
-            "id": "stop",
-            "title":
             {
-                "en": "Stop the blind movement"
+                "id": "stop",
+                "title": {
+                    "en": "Stop the blind movement"
+                },
+                "args": [
+                    {
+                        "name": "my_device",
+                        "type": "device",
+                        "filter": "driver_id=somashade"
+                    }
+                ]
             },
-            "args": [
-                {
-                    "name": "my_device",
-                    "type": "device",
-                    "filter": "driver_id=somashade"
-                } ]
-            } ]
+            {
+                "id": "windowcoverings_set_speed",
+                "title": {
+                    "en": "Quietly set the position to"
+                },
+                "args": [
+                    {
+                        "name": "my_device",
+                        "type": "device",
+                        "filter": "driver_id=somashade"
+                    },
+                    {
+                        "name": "windowcoverings_set",
+                        "type": "range",
+                        "min": 0,
+                        "max": 1,
+                        "step": 0.01,
+                        "value": 0.5,
+                        "label": "%",
+                        "labelMultiplier": 100,
+                        "labelDecimals": 0
+                    }
+                ]
+            }
+        ]
     },
     "drivers": [
-    {
-        "id": "somashade",
-        "name":
         {
-            "en": "Soma Shade"
-        },
-        "class": "blinds",
-        "capabilities": [
-            "measure_battery",
-            "windowcoverings_set"
-        ],
-        "energy":
-        {
-            "batteries": [
-                "INTERNAL"
-            ]
-        },
-        "pair": [
-        {
-            "id": "list_devices",
-            "template": "list_devices",
-            "navigation":
-            {
-                "next": "add_devices"
-            }
-        },
-        {
-            "id": "add_devices",
-            "template": "add_devices"
-        } ],
-        "settings": [
-        {
-            "id": "deviceType",
-            "type": "dropdown",
-            "label":
-            {
-                "en": "Device Type"
+            "id": "somashade",
+            "name": {
+                "en": "Soma Shade"
             },
-            "value": "shade",
-            "hint":
-            {
-                "en": "Set to the Soma motor type"
+            "class": "blinds",
+            "capabilities": [
+                "measure_battery",
+                "windowcoverings_set"
+            ],
+            "energy": {
+                "batteries": [
+                    "INTERNAL"
+                ]
             },
-            "values": [
-            {
-                "id": "shade",
-                "label":
+            "pair": [
                 {
-                    "en": "Shade"
-                }
-            },
-            {
-                "id": "tilt",
-                "label":
+                    "id": "list_devices",
+                    "template": "list_devices",
+                    "navigation": {
+                        "next": "add_devices"
+                    }
+                },
                 {
-                    "en": "Tilt"
+                    "id": "add_devices",
+                    "template": "add_devices"
                 }
-            } ]
-        },
-        {
-            "id": "reverseDirection",
-            "type": "checkbox",
-            "label":
-            {
-                "en": "Reverse Direction"
-            },
-            "value": false,
-            "hint":
-            {
-                "en": "Reverse the Up / Down direction of the controls"
+            ],
+            "settings": [
+                {
+                    "id": "deviceType",
+                    "type": "dropdown",
+                    "label": {
+                        "en": "Device Type"
+                    },
+                    "value": "shade",
+                    "hint": {
+                        "en": "Set to the Soma motor type"
+                    },
+                    "values": [
+                        {
+                            "id": "shade",
+                            "label": {
+                                "en": "Shade"
+                            }
+                        },
+                        {
+                            "id": "tilt",
+                            "label": {
+                                "en": "Tilt"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "reverseDirection",
+                    "type": "checkbox",
+                    "label": {
+                        "en": "Reverse Direction"
+                    },
+                    "value": false,
+                    "hint": {
+                        "en": "Reverse the Up / Down direction of the controls"
+                    }
+                },
+                {
+                    "id": "morning_mode",
+                    "type": "checkbox",
+                    "label": {
+                        "en": "Slow, Quiet mode"
+                    },
+                    "value": false,
+                    "hint": {
+                        "en": "Selects the Soma Morning Mode (Only for Tilt 2 and Shade 2)"
+                    }
+                }
+            ],
+            "images": {
+                "large": "/drivers/somashade/assets/images/large.png",
+                "small": "/drivers/somashade/assets/images/small.png"
             }
-        } ],
-        "images":
-        {
-            "large": "/drivers/somashade/assets/images/large.png",
-            "small": "/drivers/somashade/assets/images/small.png"
         }
-    } ]
+    ]
 }
