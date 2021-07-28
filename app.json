@@ -1,6 +1,6 @@
 {
     "id": "com.soma.connect",
-    "version": "1.2.2",
+    "version": "2.0.0",
     "compatibility": ">=5.0.0",
     "sdk": 3,
     "brandColor": "#FF7D4B",
@@ -84,7 +84,10 @@
             {
                 "id": "windowcoverings_set_speed",
                 "title": {
-                    "en": "Quietly set the position to"
+                    "en": "Quietly set the position"
+                },
+                "titleFormatted": {
+                    "en": "Quietly set the position to [[windowcoverings_set]]%"
                 },
                 "args": [
                     {
@@ -190,5 +193,26 @@
                 "small": "/drivers/somashade/assets/images/small.png"
             }
         }
-    ]
+    ],
+    "discovery": {
+        "soma_connect": {
+            "type": "mdns-sd",
+            "mdns-sd": {
+                "name": "hap",
+                "protocol": "tcp"
+            },
+            "id": "{{txt.id}}",
+            "conditions": [
+                [
+                    {
+                        "field": "txt.md",
+                        "match": {
+                            "type": "string",
+                            "value": "SOMA Connect"
+                        }
+                    }
+                ]
+            ]
+        }
+    }
 }

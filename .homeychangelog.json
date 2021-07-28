@@ -46,5 +46,11 @@
   },
   "1.2.2": {
     "en": "Converted to SDK 3. Fix issue with pairing. Add timeout to http requests"
+  },
+  "1.2.3": {
+    "en": "Support for Soma Connect firmeare 2.2.6"
+  },
+  "2.0.0": {
+    "en": "The Connect bridge is now detected using mDNS so no longer need to set the IP address. Support for multiple Connect bridges."
   }
 }

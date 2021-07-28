@@ -11,37 +11,27 @@
 <body>
     <!-- Tab links -->
     <div class="tab">
-        <button class="tablinks" onclick="setPage(event, 'settings')" id="defaultOpen">Settings</button>
+        <button class="tablinks" onclick="setPage(event, 'settings')" id="defaultOpen"><span data-i18n="settings.title"></span></button>
         <button class="tablinks" onclick="setPage(event, 'log')">Log</button>
+        <button class="tablinks" onclick="setPage(event, 'bridges')">Bridges</button>
     </div>
 
     <!-- SETTINGS PAGE -->
     <div id="settings" class="tabcontent">
 
-        <p data-i18n="settings.subtitle"></p>
-
         <fieldset>
-            <legend>Find the IP address assigned by your router.</legend>
-
-            <div class="field row">
-                <label for="hubIP">Hub IP</label>
-                <input id="hubIP" type="text" value="" />
-            </div>
-        </fieldset>
-        <p>Polling</p>
-        <fieldset>
-            <legend>Polling is always used after a settings is changed</legend>
+            <legend data-i18n="settings.subtitle"></legend>
+            <p><span data-i18n="settings.pollingNote"></span></p>
             
             <div class="field row">
-                <label for="usePolling">Use Polling For Values to update at regular intervals</label>
+                <label for="usePolling" data-i18n="settings.usePolling"></label>
                 <input id="usePolling" type="checkbox" value="pollingEnabled" />
             </div>
             <div class="field row">
-                <label for="pollInterval">Polling Interval (sec)</label>
+                <label for="pollInterval" data-i18n="settings.pollingInterval"></label>
                 <input id="pollInterval" type="text" value="" />
             </div>
-
-            <p><button id="save" class="right">Save changes</button></p>
+            <p><button id="save" class="right" data-i18n="settings.save"></button></p>
         </fieldset>
     </div>
 
@@ -63,8 +53,20 @@
         </fieldset>
     </div>
 
+    <!-- LOG PAGE -->
+    <div id="bridges" class="tabcontent">
+        <fieldset>
+            <p> Detected Bridges
+            </p>
+        </fieldset>
+        <fieldset>
+            <div class="field row">
+                <textarea id="bridgeLog"></textarea>
+            </div>
+        </fieldset>
+    </div>
+
     <script type="text/javascript">
-        var hubIPElement = document.getElementById( 'hubIP' );
         var diagLogElement = document.getElementById( 'diagLog' );
         var logEnabledElement = document.getElementById( 'logEnabled' );
         var usePollingElement = document.getElementById( 'usePolling' );
@@ -72,6 +74,8 @@
 
         var saveElement = document.getElementById( 'save' );
         var clearLogElement = document.getElementById( 'clearLog' );
+
+        var bridgeLogElement = document.getElementById( 'bridgeLog' );
 
         // a method named 'onHomeyReady' must be present in your code
         function onHomeyReady( Homey )
@@ -91,12 +95,6 @@
 
             } );
 
-            Homey.get( 'hubIP', function( err, hubIP )
-            {
-                if ( err ) return Homey.alert( err );
-                hubIPElement.value = hubIP;
-            } );
-
             Homey.get( 'usePolling', function( err, usePolling )
             {
                 if ( err ) return Homey.alert( err );
@@ -111,12 +109,6 @@
 
             saveElement.addEventListener( 'click', function( e )
             {
-                hubIPElement.value = hubIPElement.value.replace( /[\"\' ]/g, '' );
-                Homey.set( 'hubIP', hubIPElement.value, function( err )
-                {
-                    if ( err ) return Homey.alert( err );
-                } );
-
                 Homey.set( 'usePolling', usePollingElement.checked, function( err )
                 {
                     if ( err ) return Homey.alert( err );
@@ -190,6 +182,20 @@
                 // Make the log text area fill the page
                 diagLogElement.setAttribute( 'cols', diagLogElement.parentElement.clientWidth / 8 );
                 diagLogElement.style.height = ( window.innerHeight - diagLogElement.offsetTop - 20 ) + 'px';
+            }
+
+            if ( tabPage == 'bridges' )
+            {
+                // Refresh the data
+                Homey.get( 'Bridges', function( err, bridgeLog )
+                {
+                    if ( err ) return Homey.alert( err );
+                    bridgeLogElement.value =  JSON.stringify( bridgeLog, null, 2 );
+                } );
+
+                // Make the log text area fill the page
+                bridgeLogElement.setAttribute( 'cols', bridgeLogElement.parentElement.clientWidth / 8 );
+                bridgeLogElement.style.height = ( window.innerHeight - bridgeLogElement.offsetTop - 20 ) + 'px';
             }
         }
     </script>

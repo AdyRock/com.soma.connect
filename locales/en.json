@@ -1,6 +1,10 @@
 {
     "settings": {
       "title": "Settings",
-      "subtitle": "Connect Hub IP"
+      "subtitle": "Polling",
+      "usePolling": "Use Polling For Values to update at regular intervals",
+      "pollingNote": "Polling is always used after a settings is changed",
+      "pollingInterval": "Polling Interval (sec)",
+      "save": "Save changes"
     }
   }

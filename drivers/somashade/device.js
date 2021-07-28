@@ -66,24 +66,8 @@ class somaShade extends Homey.Device
 
     async onAdded()
     {
-        const type = this.getStoreValue('type');
-        if (type)
-        {
-            this.deviceTyp = type;
-            this.setSettings( {'deviceType': type} );
-        }
-    }
-
-    async initDeviceValues()
-    {
-        const ok = await this.getDeviceValues();
-        return ok;
-    }
-
-    async initDeviceBattery()
-    {
-        const ok = await this.getBatteryValues();
-        return ok;
+        this.getDeviceValues();
+        this.getBatteryValues();
     }
 
     async onSettings( { oldSettings, newSettings, changedKeys } )
@@ -116,10 +100,35 @@ class somaShade extends Homey.Device
         this.homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + this.homey.app.varToString( err ), true );
     }
 
-    async stop()
+    async getBridgeId()
     {
         const devData = this.getData();
-        return await this.homey.app.getBridge().stop( devData.id );
+        let bridgeId = this.getSetting( 'bridgeId');
+        if (!bridgeId)
+        {
+            //Find the bridge that has this device
+
+            let devices = await this.homey.app.getDevices();
+            let index = devices.findIndex( ( device ) =>
+            {
+                return device.data.id === devData.id;
+            } );
+
+            if (index >= 0)
+            {
+                bridgeId = devices[index].settings.bridgeId;
+                this.setSettings( {'bridgeId': bridgeId} );
+            }
+        }
+
+        return {bridgeId: bridgeId, devId: devData.id};
+
+    }
+
+    async stop()
+    {
+        let bridgeData = await this.getBridgeId();
+        return await this.homey.app.getBridge(bridgeData.bridgeId).stop( bridgeData.devId );
     }
 
     // this method is called when the Homey device has requested a position change ( 0 to 1)
@@ -162,7 +171,7 @@ class somaShade extends Homey.Device
             }
 
             // Get the device information stored during pairing
-            const devData = this.getData();
+            let bridgeData = await this.getBridgeId();
 
             // Set the dim Value on the device using the unique feature ID stored during pairing
             if ( this.homey.app.logEnabled )
@@ -170,7 +179,7 @@ class somaShade extends Homey.Device
                 this.homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
             }
 
-            result = await this.homey.app.getBridge().setPosition( devData.id, value, upwards );
+            result = await this.homey.app.getBridge(bridgeData.bridgeId).setPosition( bridgeData.devId, value, upwards );
             if ( result.result != 'error' )
             {
                 this.setAvailable();
@@ -198,10 +207,15 @@ class somaShade extends Homey.Device
     {
         try
         {
-            const devData = this.getData();
-
             // Get the current position Value from the device using the unique mac stored during pairing
-            const result = await this.homey.app.getBridge().getPosition( devData.id );
+            let bridgeData = await this.getBridgeId();
+            if (!bridgeData.bridgeId)
+            {
+                this.setOffline( "No Bridge detected" );
+                return false;
+            }
+
+            const result = await this.homey.app.getBridge(bridgeData.bridgeId).getPosition( bridgeData.devId );
             if ( this.homey.app.logEnabled )
             {
                 this.homey.app.updateLog( this.getName() + ': Position = ' + this.homey.app.varToString( result ) );
@@ -268,10 +282,15 @@ class somaShade extends Homey.Device
     {
         try
         {
-            const devData = this.getData();
+            let bridgeData = await this.getBridgeId();
+            if (!bridgeData.bridgeId)
+            {
+                this.setOffline( "No Bridge detected" );
+                return false;
+            }
 
             // Get the battery voltage. Comes back as v * 100, e.g. 391 = 3.91v
-            const battery = await this.homey.app.getBridge().getBattery( devData.id );
+            const battery = await this.homey.app.getBridge(bridgeData.bridgeId).getBattery( bridgeData.devId );
             if ( this.homey.app.logEnabled )
             {
                 this.homey.app.updateLog( this.getName() + ': Battery = ' + battery );
