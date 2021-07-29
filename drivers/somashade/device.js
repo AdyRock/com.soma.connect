@@ -176,14 +176,19 @@ class somaShade extends Homey.Device
             // Set the dim Value on the device using the unique feature ID stored during pairing
             if ( this.homey.app.logEnabled )
             {
-                this.homey.app.updateLog( this.getName() + " onCapabilityPosition " + value );
+                this.homey.app.updateLog( this.getName() + " Set Position " + value );
             }
 
             result = await this.homey.app.getBridge(bridgeData.bridgeId).setPosition( bridgeData.devId, value, upwards );
             if ( result.result != 'error' )
             {
+                if ( this.homey.app.logEnabled )
+                {
+                    this.homey.app.updateLog( this.getName() + " Set Position " +  this.homey.app.varToString( result ) );
+                }
+                
                 this.setAvailable();
-                this.getDeviceValues();
+                //this.getDeviceValues();
 
                 if ( !this.onlineState )
                 {
