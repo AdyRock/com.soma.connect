@@ -2,6 +2,7 @@
     "id": "com.soma.connect",
     "version": "2.0.1",
     "compatibility": ">=5.0.0",
+    "platforms": ["local"],
     "sdk": 3,
     "brandColor": "#FF7D4B",
     "name": {
@@ -30,6 +31,7 @@
     "bugs": {
         "url": "https://github.com/AdyRock/com.soma.connect/issues"
     },
+    "support": "https://github.com/AdyRock/com.soma.connect/issues",
     "source": "https://github.com/AdyRock/com.soma.connect",
     "homeyCommunityTopicId": 22000,
     "images": {
@@ -97,6 +99,7 @@
                     },
                     {
                         "name": "windowcoverings_set",
+                        "title": { "en": "Position" },
                         "type": "range",
                         "min": 0,
                         "max": 1,
@@ -116,6 +119,12 @@
             "name": {
                 "en": "Soma Shade"
             },
+            "platforms": [
+                "local"
+            ],
+            "connectivity": [
+                "ble"
+            ],
             "class": "blinds",
             "capabilities": [
                 "measure_battery",
