@@ -52,5 +52,8 @@
   },
   "2.0.0": {
     "en": "The Connect bridge is now detected using mDNS so no longer need to set the IP address. Support for multiple Connect bridges."
+  },
+  "2.0.1": {
+    "en": "Updated images for current Athom store requirements"
   }
 }
