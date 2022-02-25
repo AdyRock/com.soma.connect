@@ -335,6 +335,48 @@ class somaShade extends Homey.Device
 
         return false;
     }
+
+    async getLightValues()
+    {
+        try
+        {
+            let bridgeData = await this.getBridgeId();
+            if (!bridgeData.bridgeId)
+            {
+                this.setOffline( "No Bridge detected" );
+                return false;
+            }
+
+            // Get the light level. Comes back as 
+            const light = await this.homey.app.getBridge(bridgeData.bridgeId).getLightLevel( bridgeData.devId );
+            if ( this.homey.app.logEnabled )
+            {
+                this.homey.app.updateLog( this.getName() + ': Light Level = ' + light );
+            }
+
+            if ( light === undefined )
+            {
+                await this.setCapabilityValue( 'measure_battery', null );
+            }
+
+            if ( light >= 0 )
+            {
+                if (!this.hasCapability('measure_luminance'))
+                {
+                    await this.addCapability('measure_luminance');
+                }
+                await this.setCapabilityValue( 'measure_luminance', light );
+            }
+
+            return true;
+        }
+        catch ( err )
+        {
+            this.homey.app.updateLog( this.getName() + " getBatteryValues Error " + this.homey.app.varToString( err ), true );
+        }
+
+        return false;
+    }
 }
 
 module.exports = somaShade;

@@ -98,6 +98,37 @@ class somaShade extends Homey.Driver
             this.homey.app.updateLog( "*** Refreshing Battery Finished ***\n" );
         }
     }
+
+    async onPollLightLevel()
+    {
+        try
+        {
+            if ( this.homey.app.logEnabled )
+            {
+                this.homey.app.updateLog( "\n*** Refreshing Light Level Values ***" );
+            }
+
+            let devices = this.getDevices();
+
+            for ( var i = 0; i < devices.length; i++ )
+            {
+                let device = devices[ i ];
+                if ( device.initialised )
+                {
+                    await device.getLightValues();
+                }
+            }
+        }
+        catch ( err )
+        {
+            this.homey.app.updateLog( "Light Level Polling Error: " + err, true );
+        }
+
+        if ( this.homey.app.logEnabled )
+        {
+            this.homey.app.updateLog( "*** Refreshing Light Level Finished ***\n" );
+        }
+    }
 }
 
 module.exports = somaShade;

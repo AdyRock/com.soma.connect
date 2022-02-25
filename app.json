@@ -20,7 +20,7 @@
             "Blinds"
         ]
     },
-    "permissions": [],
+    "permissions": ["homey:manager:geolocation"],
     "contributing": {
         "donate": {
             "paypal": {
