@@ -31,6 +31,26 @@ class somaShade extends Homey.Driver
     {
         return this.homey.app.getDevices();
     }
+    async onRepair(session, device)
+    {
+        session.setHandler('showView', async (view) =>
+        { 
+            if (view === 'loading')
+            {       
+                const bridgeId = await device.findBridgeWithDevice();
+                if (bridgeId)
+                {
+                    device.getDeviceValues();
+                    await session.nextView();
+                }
+                else
+                {
+                    device.setOffline( "No Bridge detected that hosts this device", true );
+                    await session.nextView();
+                }
+            }
+        });
+    }
 
     async triggerDeviceOnlineStateChange( Device, Value )
     {

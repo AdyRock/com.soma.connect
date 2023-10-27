@@ -1,8 +1,10 @@
 {
     "id": "com.soma.connect",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "compatibility": ">=5.0.0",
-    "platforms": ["local"],
+    "platforms": [
+        "local"
+    ],
     "sdk": 3,
     "brandColor": "#FF7D4B",
     "name": {
@@ -20,7 +22,9 @@
             "Blinds"
         ]
     },
-    "permissions": ["homey:manager:geolocation"],
+    "permissions": [
+        "homey:manager:geolocation"
+    ],
     "contributing": {
         "donate": {
             "paypal": {
@@ -42,7 +46,12 @@
         "name": "Adrian Rockall",
         "email": "ady@rockall.plus.com"
     },
-    "api": {},
+    "api": {
+        "Add_EditBridge": {
+            "method": "post",
+            "path": "/Add_EditBridge/"
+        }
+    },
     "flow": {
         "triggers": [
             {
@@ -99,7 +108,9 @@
                     },
                     {
                         "name": "windowcoverings_set",
-                        "title": { "en": "Position" },
+                        "title": {
+                            "en": "Position"
+                        },
                         "type": "range",
                         "min": 0,
                         "max": 1,
@@ -148,6 +159,16 @@
                     "template": "add_devices"
                 }
             ],
+            "repair": [
+                {
+                    "id": "loading",
+                    "template": "loading"
+                },
+                {
+                    "id": "done",
+                    "template": "done"
+                }
+            ],
             "settings": [
                 {
                     "id": "deviceType",
@@ -194,6 +215,17 @@
                     "value": false,
                     "hint": {
                         "en": "Selects the Soma Morning Mode (Only for Tilt 2 and Shade 2)"
+                    }
+                },
+                {
+                    "id": "bridgeId",
+                    "type": "text",
+                    "label": {
+                        "en": "Bridge ID"
+                    },
+                    "value": "",
+                    "hint": {
+                        "en": "Specifies the bridge mac address that the device is connected to"
                     }
                 }
             ],

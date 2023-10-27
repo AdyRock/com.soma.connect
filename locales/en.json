@@ -5,6 +5,10 @@
       "usePolling": "Use Polling For Values to update at regular intervals",
       "pollingNote": "Polling is always used after a settings is changed",
       "pollingInterval": "Polling Interval (sec)",
-      "save": "Save changes"
+      "save": "Save changes",
+      "addBridge": "Add, Update or Remove a Bridge",
+      "bridgeID": "Bridge ID (either a new ID to add a bridge or one of the existing IDs below to update or remove it)",
+      "bridgeIP": "Bridge IP (leave blank to remove the bridge)",
+      "add": "Add / Update / Remove"
     }
   }

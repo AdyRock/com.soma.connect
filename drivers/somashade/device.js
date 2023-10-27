@@ -88,16 +88,25 @@ class somaShade extends Homey.Device
         this.getDeviceValues();
     }
 
-    setOffline( err )
+    setOffline( message, forceUpdate )
     {
-        if ( this.onlineState )
+        if (this.onlineState || forceUpdate)
         {
             this.onlineState = false;
-            this.setUnavailable( err );
 
+            if (message === 'NOSHADEWITHMAC')
+            {
+                message = "No Shade with this MAC address found on the Hub. Try the Repair option if it has moved to a different Hub";
+            }
+            else if (message === 'HTTP Catch: Timeout')
+            {
+                message = "No response from Hub. Check the IP address is correct and the Hub is powered on";
+            }
+    
+            this.setUnavailable( message );
             this.driver.triggerDeviceOnlineStateChange( this, this.onlineState );
         }
-        this.homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + this.homey.app.varToString( err ), true );
+        this.homey.app.updateLog( this.getName() + " onCapabilityPosition Error: " + this.homey.app.varToString( message ), true );
     }
 
     async getBridgeId()
@@ -107,28 +116,40 @@ class somaShade extends Homey.Device
         if (!bridgeId)
         {
             //Find the bridge that has this device
-
-            let devices = await this.homey.app.getDevices();
-            let index = devices.findIndex( ( device ) =>
-            {
-                return device.data.id === devData.id;
-            } );
-
-            if (index >= 0)
-            {
-                bridgeId = devices[index].settings.bridgeId;
-                this.setSettings( {'bridgeId': bridgeId} );
-            }
+            bridgeId = await thisfindBridgeWithDevice();
         }
 
         return {bridgeId: bridgeId, devId: devData.id};
 
     }
 
+    async findBridgeWithDevice()
+    {
+        let devices = await this.homey.app.getDevices();
+        let index = devices.findIndex( ( device ) =>
+        {
+            return device.data.id === devData.id;
+        } );
+
+        if (index >= 0)
+        {
+            bridgeId = devices[index].settings.bridgeId;
+            this.setSettings( {'bridgeId': bridgeId} );
+            return bridgeId;
+        }
+        return null;
+    }
+
     async stop()
     {
         let bridgeData = await this.getBridgeId();
-        return await this.homey.app.getBridge(bridgeData.bridgeId).stop( bridgeData.devId );
+        const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
+        if (!bridge)
+        {
+            this.setOffline( "No Bridge detected" );
+            throw new Error("No Bridge detected");
+        }
+        return bridge.stop( bridgeData.devId );
     }
 
     // this method is called when the Homey device has requested a position change ( 0 to 1)
@@ -179,7 +200,13 @@ class somaShade extends Homey.Device
                 this.homey.app.updateLog( this.getName() + " Set Position " + value );
             }
 
-            result = await this.homey.app.getBridge(bridgeData.bridgeId).setPosition( bridgeData.devId, value, upwards );
+            const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
+            if (!bridge)
+            {
+                this.setOffline( "No Bridge detected" );
+                throw new Error("No Bridge detected");
+            }
+            result = await bridge.setPosition( bridgeData.devId, value, upwards );
             if ( result.result != 'error' )
             {
                 if ( this.homey.app.logEnabled )
@@ -199,7 +226,7 @@ class somaShade extends Homey.Device
             }
             else
             {
-                this.setOffline( result );
+                this.setOffline( result.msg );
             }
         }
         // catch ( err )
@@ -220,7 +247,13 @@ class somaShade extends Homey.Device
                 return false;
             }
 
-            const result = await this.homey.app.getBridge(bridgeData.bridgeId).getPosition( bridgeData.devId );
+            const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
+            if (!bridge)
+            {
+                this.setOffline( "No Bridge detected" );
+                throw new Error("No Bridge detected");
+            }
+            const result = await bridge.getPosition( bridgeData.devId );
             if ( this.homey.app.logEnabled )
             {
                 this.homey.app.updateLog( this.getName() + ': Position = ' + this.homey.app.varToString( result ) );
@@ -271,13 +304,13 @@ class somaShade extends Homey.Device
             }
             else
             {
-                this.setOffline( result );
+                this.setOffline( result.msg );
                 return false;
             }
         }
         catch ( err )
         {
-            this.setOffline( err );
+            this.setOffline( err.message );
         }
 
         return false;
@@ -295,7 +328,13 @@ class somaShade extends Homey.Device
             }
 
             // Get the battery voltage. Comes back as v * 100, e.g. 391 = 3.91v
-            const battery = await this.homey.app.getBridge(bridgeData.bridgeId).getBattery( bridgeData.devId );
+            const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
+            if (!bridge)
+            {
+                this.setOffline( "No Bridge detected" );
+                throw new Error("No Bridge detected");
+            }
+            const battery = await bridge.getBattery( bridgeData.devId );
             if ( this.homey.app.logEnabled )
             {
                 this.homey.app.updateLog( this.getName() + ': Battery = ' + battery );
@@ -348,7 +387,13 @@ class somaShade extends Homey.Device
             }
 
             // Get the light level. Comes back as 
-            const light = await this.homey.app.getBridge(bridgeData.bridgeId).getLightLevel( bridgeData.devId );
+            const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
+            if (!bridge)
+            {
+                this.setOffline( "No Bridge detected" );
+                throw new Error("No Bridge detected");
+            }
+            const light = await bridge.getLightLevel( bridgeData.devId );
             if ( this.homey.app.logEnabled )
             {
                 this.homey.app.updateLog( this.getName() + ': Light Level = ' + light );

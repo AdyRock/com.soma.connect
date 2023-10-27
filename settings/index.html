@@ -18,50 +18,62 @@
 
     <!-- SETTINGS PAGE -->
     <div id="settings" class="tabcontent">
-
-        <fieldset>
-            <legend data-i18n="settings.subtitle"></legend>
+        <fieldset class="homey-form-fieldset">
+            <legend class="homey-form-legend" data-i18n="settings.subtitle"></legend>
             <p><span data-i18n="settings.pollingNote"></span></p>
             
-            <div class="field row">
-                <label for="usePolling" data-i18n="settings.usePolling"></label>
-                <input id="usePolling" type="checkbox" value="pollingEnabled" />
+            <div class="homey-form-group">
+                <label class="homey-form-checkbox">
+                    <input class="homey-form-checkbox-input" id="usePolling" type="checkbox" value="pollingEnabled" />
+                    <span class="homey-form-checkbox-checkmark"></span>
+                    <span class="homey-form-checkbox-text"><span data-i18n="settings.usePolling"></span></span>
+                </label>
             </div>
-            <div class="field row">
-                <label for="pollInterval" data-i18n="settings.pollingInterval"></label>
-                <input id="pollInterval" type="text" value="" />
+            <div class="homey-form-group">
+                <label class="homey-form-label" for="pollInterval" data-i18n="settings.pollingInterval"></label>
+                <input class="homey-form-input" id="pollInterval" type="text" value="" />
             </div>
-            <p><button id="save" class="right" data-i18n="settings.save"></button></p>
+            <p><button id="save" class="homey-button-primary-full" data-i18n="settings.save"></button></p>
         </fieldset>
     </div>
 
     <!-- LOG PAGE -->
     <div id="log" class="tabcontent">
-        <fieldset>
-            <p> Diagnostics Log
-            </p>
-            <div class="field row">
-                <label for="logEnabled">Log Enabled</label>
-                <input id="logEnabled" type="checkbox" value="logEnabled" />
+        <fieldset class="homey-form-fieldset">
+            <legend class="homey-form-legend">Diagnostics Log</legend>
+            <div class="homey-form-group">
+                <label class="homey-form-checkbox">
+                    <input class="homey-form-checkbox-input" id="logEnabled" type="checkbox" value="logEnabled" />
+                    <span class="homey-form-checkbox-checkmark"></span>
+                    <span class="homey-form-checkbox-text">Log Enabled</span>
+                </label>
             </div>
-        </fieldset>
-        <fieldset>
-            <p><button id="clearLog">Clear Log</button></p>
-            <div class="field row">
-                <textarea id="diagLog"></textarea>
+            <p><button id="clearLog" class="homey-button-small">Clear Log</button></p>
+            <div class="homey-form-group">
+                <textarea id="diagLog" style="white-space: nowrap;"></textarea>
             </div>
         </fieldset>
     </div>
 
-    <!-- LOG PAGE -->
+    <!-- Bridges PAGE -->
     <div id="bridges" class="tabcontent">
-        <fieldset>
-            <p> Detected Bridges
-            </p>
+        <fieldset class="homey-form-fieldset">
+            <legend class="homey-form-legend" data-i18n="settings.addBridge"></legend>
+            <div class="homey-form-group">
+                <label class="homey-form-label" for="bridgeID" data-i18n="settings.bridgeID"></label>
+                <input class="homey-form-input" id="bridgeID" type="text"  value=""/>
+            </div>
+            <div class="homey-form-group">
+                <label class="homey-form-label" for="bridgeIP" data-i18n="settings.bridgeIP"></label>
+                <input class="homey-form-input" id="bridgeIP" type="text" value=""/>
+            </div>
+            <p><button id="addBridge" class="homey-button-primary" data-i18n="settings.add"></button></p>
         </fieldset>
-        <fieldset>
-            <div class="field row">
-                <textarea id="bridgeLog"></textarea>
+
+        <fieldset class="homey-form-fieldset">
+            <legend class="homey-form-legend">Available Bridges</legend>
+            <div class="homey-form-group">
+                <textarea id="bridgeLog" style="white-space: nowrap;"></textarea>
             </div>
         </fieldset>
     </div>
@@ -76,6 +88,9 @@
         var clearLogElement = document.getElementById( 'clearLog' );
 
         var bridgeLogElement = document.getElementById( 'bridgeLog' );
+        var bridgeIDElement = document.getElementById( 'bridgeID' );
+        var bridgeIPElement = document.getElementById( 'bridgeIP' );
+        var addBridgeElement = document.getElementById( 'addBridge' );
 
         // a method named 'onHomeyReady' must be present in your code
         function onHomeyReady( Homey )
@@ -140,6 +155,27 @@
                 } );
                 diagLogElement.value = "";
             } );
+
+            addBridgeElement.addEventListener( 'click', function( e )
+            {
+                if ( bridgeIDElement.value == "" ) return Homey.alert( "Please enter a Bridge ID" );
+                Homey.api('POST', '/Add_EditBridge/', { bridgeId: bridgeIDElement.value, bridgeIp: bridgeIPElement.value }, function(err, result)
+                {
+                    if (err)
+                    {
+                        Homey.alert(err);
+                        return;
+                    }
+
+                    // Refresh the data
+                    Homey.get( 'Bridges', function( err, bridgeLog )
+                    {
+                        if ( err ) return Homey.alert( err );
+                        bridgeLogElement.value =  JSON.stringify( bridgeLog, null, 2 );
+                    } );
+                });
+
+            });
         }
 
         function setPage( evt, tabPage )

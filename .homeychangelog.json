@@ -58,5 +58,8 @@
   },
   "2.0.2": {
     "en": "Update Node dependencies"
+  },
+  "2.0.3": {
+    "en": "Added app settings to allow a bridge to be defined by IP address, Added a repair option to the device."
   }
 }
