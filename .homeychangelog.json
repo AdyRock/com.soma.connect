@@ -67,5 +67,8 @@
   },
   "2.0.5": {
     "en": "Update command to get data USB API"
+  },
+  "2.0.6": {
+    "en": "Update set positioncommand for USB API. Use new battery percentage if it's available"
   }
 }

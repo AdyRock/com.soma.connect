@@ -348,11 +348,16 @@ class somaShade extends Homey.Device
                 return false;
             }
 
-            if ( battery >= 0 )
+            // if battery.battery_percentage is defined then use that
+            if (battery.battery_percentage !== undefined)
+            {
+                await this.setCapabilityValue( 'measure_battery', battery.battery_percentage );
+            }
+            else if ( battery.battery_level >= 0 )
             {
                 // Calculate battery level as a percentage of full charge that matches the official Soma App
                 // The range should be between 3.6 and 4.1 volts for 0 to 100% charge
-                var batteryPct = ( battery - 360 ) * 2;
+                var batteryPct = ( battery.battery_level - 360 ) * 2;
 
                 // Keep in range of 0 to 100% as the level can be more than 100% when on the charger
                 if ( batteryPct > 100 )
