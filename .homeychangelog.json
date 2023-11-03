@@ -70,5 +70,8 @@
   },
   "2.0.6": {
     "en": "Update set positioncommand for USB API. Use new battery percentage if it's available"
+  },
+  "2.0.7": {
+    "en": "Send direction and night mode to USB API"
   }
 }
