@@ -58,6 +58,8 @@ class somaShade extends Homey.Device
 
         this.initialised = true;
 
+        this.getDeviceValues();
+        
         if ( this.homey.app.logEnabled )
         {
             this.homey.app.updateLog( 'Device initialise complete( Name: ' + this.getName() + ', Class: ' + this.getClass() + ")" );

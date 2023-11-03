@@ -64,5 +64,8 @@
   },
   "2.0.4": {
     "en": "Fix issues introduce in 2.0.3. Added USB Bridge option to allow for changed API message format"
+  },
+  "2.0.5": {
+    "en": "Update command to get data USB API"
   }
 }
