@@ -61,5 +61,8 @@
   },
   "2.0.3": {
     "en": "Added app settings to allow a bridge to be defined by IP address, Added a repair option to the device."
+  },
+  "2.0.4": {
+    "en": "Fix issues introduce in 2.0.3. Added USB Bridge option to allow for changed API message format"
   }
 }

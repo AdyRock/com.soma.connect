@@ -67,6 +67,13 @@
                 <label class="homey-form-label" for="bridgeIP" data-i18n="settings.bridgeIP"></label>
                 <input class="homey-form-input" id="bridgeIP" type="text" value=""/>
             </div>
+            <div class="homey-form-group">
+                <label class="homey-form-checkbox">
+                    <input class="homey-form-checkbox-input" id="bridgeUSB" type="checkbox" value="bridgeUSB" />
+                    <span class="homey-form-checkbox-checkmark"></span>
+                    <span class="homey-form-checkbox-text">USB Bridge</span>
+                </label>
+            </div>
             <p><button id="addBridge" class="homey-button-primary" data-i18n="settings.add"></button></p>
         </fieldset>
 
@@ -90,6 +97,7 @@
         var bridgeLogElement = document.getElementById( 'bridgeLog' );
         var bridgeIDElement = document.getElementById( 'bridgeID' );
         var bridgeIPElement = document.getElementById( 'bridgeIP' );
+        var bridgeUSBElement = document.getElementById( 'bridgeUSB' );
         var addBridgeElement = document.getElementById( 'addBridge' );
 
         // a method named 'onHomeyReady' must be present in your code
@@ -159,7 +167,7 @@
             addBridgeElement.addEventListener( 'click', function( e )
             {
                 if ( bridgeIDElement.value == "" ) return Homey.alert( "Please enter a Bridge ID" );
-                Homey.api('POST', '/Add_EditBridge/', { bridgeId: bridgeIDElement.value, bridgeIp: bridgeIPElement.value }, function(err, result)
+                Homey.api('POST', '/Add_EditBridge/', { bridgeId: bridgeIDElement.value, bridgeIp: bridgeIPElement.value, bridgeUSB: bridgeUSBElement.checked }, function(err, result)
                 {
                     if (err)
                     {
