@@ -24,6 +24,12 @@ class somaShade extends Homey.Device
             this.deviceType = 'shade';
             this.setSettings( {'deviceType': this.deviceType} );
         }
+		this.pollForLightLevel = this.getSetting( 'pollForLightLevel' );
+		if ( !this.pollForLightLevel )
+		{
+			this.pollForLightLevel = true;
+			this.setSettings( {'pollForLightLevel': this.pollForLightLevel} );
+		}
         this.reverseDirection = this.getSetting( 'reverseDirection' );
         if ( !this.reverseDirection )
         {
@@ -86,6 +92,10 @@ class somaShade extends Homey.Device
         {
             this.morning_mode = newSettings.morning_mode;
         }
+		if ( changedKeys.indexOf( "pollForLightLevel" ) >= 0 )
+		{
+			this.pollForLightLevel = newSettings.pollForLightLevel;
+		}
 
         this.getDeviceValues();
     }
@@ -386,40 +396,42 @@ class somaShade extends Homey.Device
     {
         try
         {
-            let bridgeData = await this.getBridgeId();
-            if (!bridgeData.bridgeId)
-            {
-                this.setOffline( "No Bridge detected" );
-                return false;
-            }
+			if (!this.pollForLightLevel)
+			{
+				let bridgeData = await this.getBridgeId();
+				if (!bridgeData.bridgeId)
+				{
+					this.setOffline( "No Bridge detected" );
+					return false;
+				}
 
-            // Get the light level. Comes back as 
-            const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
-            if (!bridge)
-            {
-                this.setOffline( "No Bridge detected" );
-                throw new Error("No Bridge detected");
-            }
-            const light = await bridge.getLightLevel( bridgeData.devId );
-            if ( this.homey.app.logEnabled )
-            {
-                this.homey.app.updateLog( this.getName() + ': Light Level = ' + light );
-            }
+				// Get the light level. Comes back as 
+				const bridge = await this.homey.app.getBridge(bridgeData.bridgeId);
+				if (!bridge)
+				{
+					this.setOffline( "No Bridge detected" );
+					throw new Error("No Bridge detected");
+				}
+				const light = await bridge.getLightLevel( bridgeData.devId );
+				if ( this.homey.app.logEnabled )
+				{
+					this.homey.app.updateLog( this.getName() + ': Light Level = ' + light );
+				}
 
-            if ( light === undefined )
-            {
-                await this.setCapabilityValue( 'measure_battery', null );
-            }
+				if ( light === undefined )
+				{
+					await this.setCapabilityValue( 'measure_battery', null );
+				}
 
-            if ( light >= 0 )
-            {
-                if (!this.hasCapability('measure_luminance'))
-                {
-                    await this.addCapability('measure_luminance');
-                }
-                await this.setCapabilityValue( 'measure_luminance', light );
-            }
-
+				if ( light >= 0 )
+				{
+					if (!this.hasCapability('measure_luminance'))
+					{
+						await this.addCapability('measure_luminance');
+					}
+					await this.setCapabilityValue( 'measure_luminance', light );
+				}
+			}
             return true;
         }
         catch ( err )

@@ -73,5 +73,8 @@
   },
   "2.0.7": {
     "en": "Send direction and night mode to USB API"
+  },
+  "2.0.8": {
+	"en": "Added option to the device to disable polling for light level"
   }
 }

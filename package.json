@@ -1,6 +1,6 @@
 {
   "name": "com.soma.connect",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Adds support to Homey for Soma devices via the Soma Connect hub",
   "main": "api.js",
   "directories": {

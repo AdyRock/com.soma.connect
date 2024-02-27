@@ -1,6 +1,6 @@
 {
     "id": "com.soma.connect",
-    "version": "2.0.7",
+    "version": "2.0.8",
     "compatibility": ">=5.0.0",
     "platforms": [
         "local"
@@ -195,6 +195,17 @@
                         }
                     ]
                 },
+				{
+					"id": "pollForLightLevel",
+					"type": "checkbox",
+					"label": {
+						"en": "Poll for Light Level"
+					},
+					"value": true,
+					"hint": {
+						"en": "Poll for the light level and set the device to the correct position"
+					}
+				},
                 {
                     "id": "reverseDirection",
                     "type": "checkbox",
